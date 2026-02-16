@@ -11,11 +11,26 @@ const io = socketio(expressServer, {
 // 'on' is a regular javascript/node event listener
 // it listens for the 'connection' event which is emitted when a client connects to the server
 io.on ('connect', socket => {
-    console.log('A user connected: ', socket.id) // Log when a user connects
     // the first argument of the emit, is the event aneme, the second argument is the data we want to send to the client
-    socket.emit('welcome', 'Welcome to the chat app!') // push an event to the client
+        // You can use any word except what is reserved for Socket.IO (like 'connect', 'disconnect', etc.) see https://socket.io/docs/v4/emit-cheatsheet
+    console.log('A user connected: ', socket.id) // Log when a user connects
+    // socket.emit eill emit to THIS specific client
+    socket.emit('welcome', 'Welcome to the chat app!')
+    // io.emit will emit to ALL connected clients
+    io.emit('newCLient', socket.id)
 
     socket.on('welcomeReceived', data => {
-    console.log(data) // Log the message received from the client
-})
+        console.log(data) // Log the message received from the client
+    })
+
+    // We can get the secret and the query parameters from the handshake object passed by the client
+    // console.log(socket.handshake)
+    
+    // if using auth, we could socket.disconnect() if the secret is wrong, for example
+    let {auth: {secret}, query: {meaningOfLife}} = socket.handshake
+    if (secret !== "This is a secret") {
+        socket.disconnect()
+    } else {
+        console.log('The meaning of life is:', meaningOfLife) // Log the meaning of life from the query parameters
+    }
 })
