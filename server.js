@@ -13,5 +13,9 @@ const io = socketio(expressServer, {
 io.on ('connect', socket => {
     console.log('A user connected: ', socket.id) // Log when a user connects
     // the first argument of the emit, is the event aneme, the second argument is the data we want to send to the client
-    socket.emit('welcome', 'Welcome to the chat app!') // Send a welcome message to the connected client
+    socket.emit('welcome', 'Welcome to the chat app!') // push an event to the client
+
+    socket.on('welcomeReceived', data => {
+    console.log(data) // Log the message received from the client
+})
 })
