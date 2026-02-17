@@ -1,8 +1,10 @@
+const JWTToken = ""; // Replace with JWT token
+
 // io() connects to the Socket.IO server at the specified URL
 const socket = io("http://localhost:3000", {
   // options can be passed here if needed, see https://socket.io/docs/v4/client-options/
   auth: {
-    secret: "This is a secret",
+    token: JWTToken,
   },
   query: {
     meaningOfLife: 42,
@@ -10,7 +12,7 @@ const socket = io("http://localhost:3000", {
 });
 
 // Just like on the server, our socket has an 'on' method and an 'emit' method
-socket.on("welcome", (data) => {
+socket.on("welcomeMessage", (data) => {
   console.log(data); // Log the welcome message received from the server
 });
 

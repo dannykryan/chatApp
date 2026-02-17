@@ -19,6 +19,8 @@ const io = new Server(expressServer, {
 // 'on' is a regular javascript/node event listener
 // it listens for the 'connection' event which is emitted when a client connects to the server
 io.on("connect", (socket) => {
+
+  console.log("handshake", socket.handshake);
   // JWT verification
   const token = socket.handshake.auth.token; // Get the token from the client's handshake auth data
   if (!token) {
@@ -26,12 +28,23 @@ io.on("connect", (socket) => {
     socket.disconnect();
     return;
   }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    socket.user = decoded; // Atach user info to socket
+    console.log(`User ${decoded.username} connected with socket ID: ${socket.id}`); // Log the username and socket ID of the connected user
+  } catch(error) {
+    console.log("Invalid token, disconnecting");
+    socket.disconnect();
+    return;
+  }
+  
   // the first argument of the emit, is the event name, the second argument is the data we want to send to the client
-  // You can use any word except what is reserved for Socket.IO (like 'connect', 'disconnect', etc.) see https://socket.io/docs/v4/emit-cheatsheet
+  // We can use any word except what is reserved for Socket.IO (like 'connect', 'disconnect', etc.) see https://socket.io/docs/v4/emit-cheatsheet
   console.log("A user connected: ", socket.id); // Log when a user connects
 
   // socket.emit will emit to THIS specific client
-  socket.emit("welcome", "Welcome to the chat app!");
+  socket.emit("welcomeMessage", "Welcome to the chat app!");
 
   // io.emit will emit to ALL connected clients
   io.emit("newClient", socket.id);
