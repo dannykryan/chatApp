@@ -1,7 +1,8 @@
-const express = require('express');
-const app = express() // Create the Express application
-app.use(express.static('public')) // Serve static files from the 'public' directory
-const expressServer = app.listen(3000) // Start the server on port 3000, save as a variable
+const app = require('./app')
+const http = require('http')
+const expressServer = app.listen(3000, () => {
+    console.log('Server is listening on port 3000') // Log when the server starts
+}) // Start the server on port 3000, save as a variable
 
 const socketio = require('socket.io') // Import Socket.IO
 const io = socketio(expressServer, {
@@ -17,7 +18,7 @@ io.on ('connect', socket => {
     // socket.emit will emit to THIS specific client
     // socket.emit('welcome', 'Welcome to the chat app!')
     // io.emit will emit to ALL connected clients
-    // io.emit('newCLient', socket.id)
+    // io.emit('newClient', socket.id)
 
     // socket.on('welcomeReceived', data => {
     //     console.log(data) // Log the message received from the client
@@ -39,3 +40,4 @@ io.on ('connect', socket => {
         io.emit('MessageFromServerToAllClients', newMessage) // Log the message received from the client
     })
 })
+

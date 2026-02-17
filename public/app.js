@@ -20,7 +20,7 @@ socket.on('helloAll', data => {
     console.log('Message from server to all clients:', data) // Log the helloAll message received from the server
 })
 
-socket.on('newCLient', data => {
+socket.on('newClient', data => {
     console.log(data, 'has joined the chat!') // Log the new client message received from the server
 })
 
