@@ -1,39 +1,101 @@
-const JWTToken = ""; // Replace with JWT token
+let socket = null;
 
-// io() connects to the Socket.IO server at the specified URL
-const socket = io("http://localhost:3000", {
-  // options can be passed here if needed, see https://socket.io/docs/v4/client-options/
-  auth: {
-    token: JWTToken,
-  },
-  query: {
-    meaningOfLife: 42,
-  },
+function initializeSocket() {
+  const JWTToken = localStorage.getItem("token");
+
+  socket = io("http://localhost:3000", {
+    auth: {
+      token: JWTToken,
+    },
+  });
+
+  socket.on("welcomeMessage", (data) => {
+    console.log(data);
+  });
+
+  socket.on("MessageFromServerToAllClients", (newMessage) => {
+    const newMessageElement = document.createElement("li");
+    newMessageElement.textContent = newMessage;
+    document.getElementById("messages-container").appendChild(newMessageElement);
+  });
+}
+
+document.getElementById("show-register").addEventListener("click", () => {
+    document.querySelector(".login-container").classList.add("d-none");
+    document.querySelector(".register-container").classList.remove("d-none");
 });
 
-// Just like on the server, our socket has an 'on' method and an 'emit' method
-socket.on("welcomeMessage", (data) => {
-  console.log(data); // Log the welcome message received from the server
+document.getElementById("show-login").addEventListener("click", () => {
+    document.querySelector(".register-container").classList.add("d-none");
+    document.querySelector(".login-container").classList.remove("d-none");
 });
 
-socket.on("helloAll", (data) => {
-  console.log("Message from server to all clients:", data); // Log the helloAll message received from the server
+// Registration
+document.getElementById("register-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const username = document.getElementById("register-username").value;
+    const email = document.getElementById("register-email").value;
+    const password = document.getElementById("register-password").value;
+
+    fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, email, password }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (data.message) {
+            alert(data.message);
+            document.querySelector(".register-container").classList.add("d-none");
+            document.querySelector(".login-container").classList.remove("d-none");
+        } else {
+            alert("Registration failed: " + data.error);
+        }
+    })
+    .catch((error) => {
+        console.error("Error registering:", error);
+        alert("An error occurred while registering.");
+    });
 });
 
-socket.on("newClient", (data) => {
-  console.log(data, "has joined the chat!"); // Log the new client message received from the server
+// Login
+document.getElementById("login-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+
+    fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (data.token) {
+            localStorage.setItem("token", data.token);
+            alert("Login successful!");
+            initializeSocket(); // ← Connect socket AFTER login
+            document.querySelector(".login-container").classList.add("d-none");
+            document.querySelector(".chat-container").classList.remove("d-none");
+        } else {
+            alert("Login failed: " + data.error);
+        }
+    })
+    .catch((error) => {
+        console.error("Error logging in:", error);
+        alert("An error occurred while logging in.");
+    });
 });
 
-socket.on("MessageFromServerToAllClients", (newMessage) => {
-  const newMessageElement = document.createElement("li"); // Create a new list item element for the message
-  newMessageElement.textContent = newMessage; // Set the text content of the new message element to the data received from the server
-  document.getElementById("messages-container").appendChild(newMessageElement); // Append the new message element to the messages container
-});
-
+// Message sending
 document.getElementById("messages-form").addEventListener("submit", (e) => {
-  e.preventDefault(); // Prevent the default form submission behavior
-  const newMessage = document.getElementById("user-message").value; // Get the value of the message input field
-  document.getElementById("user-message").value = ""; // Clear the message input field
+  e.preventDefault();
+  const newMessage = document.getElementById("user-message").value;
+  document.getElementById("user-message").value = "";
   // This socket is sending an event to the server...
   socket.emit("messageFromClientToServer", newMessage); // Emit the new message to the server
 });

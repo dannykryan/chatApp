@@ -13,7 +13,61 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="container text-center">
+
+    <div class="register-container d-none">
+        <h2 class="text-center mt-5">Register</h2>
+        <form id="register-form" class="row justify-content-center mt-4">
+            <div class="col-6 d-flex gap-2">
+            <input
+                type="text"
+                id="register-username"
+                class="form-control"
+                placeholder="Enter your username..."
+            />
+            <input
+                type="email"
+                id="register-email"
+                class="form-control"
+                placeholder="Enter your email..."
+            />
+            <input
+                type="password"
+                id="register-password"
+                class="form-control"
+                placeholder="Enter your password..."
+            />
+            </div>
+            <div class="col-2">
+            <button type="submit" class="btn btn-success">Register</button>
+            </div>
+        </form>
+        <a href="#" id="show-login" class="d-block text-center mt-3">Already have an account? Login here.</a>
+    </div>
+
+    <div class="login-container">
+        <h2 class="text-center mt-5">Login to Chat</h2>
+        <form id="login-form" class="row justify-content-center mt-4">
+            <div class="col-6 d-flex gap-2">
+            <input
+                type="email"
+                id="login-email"
+                class="form-control"
+                placeholder="Enter your email..."
+            />
+            <input
+                type="password"
+                id="login-password"
+                class="form-control"
+                placeholder="Enter your password..."
+            />
+            </div>
+            <div class="col-2">
+            <button type="submit" class="btn btn-success">Login</button>
+            </div>
+        </form>
+        <a href="#" id="show-register" class="d-block text-center mt-3">Don't have an account? Register here.</a>
+    </div>
+    <div class="chat-container container text-center d-none">
       <form id="messages-form" class="row">
         <div class="col-6">
           <input
