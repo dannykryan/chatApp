@@ -7,8 +7,6 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "SECRET_KEY";
 
 const saltRounds = 10;
-// const myPlaintextPassword = 's0/\/\P4$$w0rD';
-// const someOtherPlaintextPassword = 'not_bacon';
 
 // POST /api/auth/register
 router.post("/auth/register", async (req, res) => {
