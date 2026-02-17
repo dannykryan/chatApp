@@ -1,6 +1,7 @@
 {
   "name": "websocket-based-chat-app",
   "version": "1.0.0",
+  "type": "module",
   "description": "A basic real-time chat app using websickets with socket.io",
   "main": "index.js",
   "scripts": {
@@ -16,5 +17,8 @@
   "dependencies": {
     "express": "^5.2.1",
     "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1"
   }
 }

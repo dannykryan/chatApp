@@ -1,12 +1,16 @@
-const app = require('./app')
-const http = require('http')
-const expressServer = app.listen(3000, () => {
-    console.log('Server is listening on port 3000') // Log when the server starts
+import app from './app.js';
+import { Server } from "socket.io";
+
+const PORT = process.env.PORT || 3000;
+
+const expressServer = app.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`) // Log when the server starts
 }) // Start the server on port 3000, save as a variable
 
-const socketio = require('socket.io') // Import Socket.IO
-const io = socketio(expressServer, {
-
+const io = new Server(expressServer, {
+    cors: {
+        origin: '*',
+    },
 }) // Attach Socket.IO to the server
 
 // 'on' is a regular javascript/node event listener
