@@ -8,10 +8,9 @@ let dbUrl = process.env.DATABASE_URL;
 
 if (!directUrl) {
   throw new Error(
-    "DIRECT_URL environment variable is not set. Please set it to your database connection string."
+    "DIRECT_URL environment variable is not set. Please set it to your database connection string.",
   );
 }
-
 
 export default defineConfig({
   schema: "prisma/schema.prisma",

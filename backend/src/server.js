@@ -35,8 +35,10 @@ io.on("connect", (socket) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     socket.user = decoded; // Attach user info to socket
-    console.log(`User ${decoded.username} connected with socket ID: ${socket.id}`); // Log the username and socket ID of the connected user
-  } catch(error) {
+    console.log(
+      `User ${decoded.username} connected with socket ID: ${socket.id}`,
+    ); // Log the username and socket ID of the connected user
+  } catch (error) {
     console.log("Invalid token, disconnecting");
     socket.disconnect();
     return;
