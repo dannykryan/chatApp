@@ -1,5 +1,3 @@
-process.env.JWT_SECRET = "test-secret";
-
 import { describe, it, expect } from "vitest";
 import request from "supertest";
 import jwt from "jsonwebtoken";
