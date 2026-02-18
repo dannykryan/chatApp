@@ -1,7 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import supabase from "../db/supabase.js";
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "SECRET_KEY";
@@ -14,7 +13,7 @@ router.post("/auth/register", async (req, res) => {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
-      return res.status(400).json({ error: "Allfields required" });
+      return res.status(400).json({ error: "All fields required" });
     }
 
     const passwordHash = await bcrypt.hashSync(password, saltRounds);

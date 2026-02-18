@@ -16,8 +16,6 @@ const io = new Server(expressServer, {
   },
 });
 
-// 'on' is a regular javascript/node event listener
-// it listens for the 'connection' event which is emitted when a client connects to the server
 io.on("connect", (socket) => {
 
   console.log("handshake", socket.handshake);
