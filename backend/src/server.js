@@ -1,3 +1,10 @@
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.join(__dirname, ".env") });
+
 import app from "./app.js";
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
@@ -17,8 +24,6 @@ const io = new Server(expressServer, {
 });
 
 io.on("connect", (socket) => {
-
-  console.log("handshake", socket.handshake);
   // JWT verification
   const token = socket.handshake.auth.token; // Get the token from the client's handshake auth data
   if (!token) {
@@ -29,7 +34,7 @@ io.on("connect", (socket) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    socket.user = decoded; // Atach user info to socket
+    socket.user = decoded; // Attach user info to socket
     console.log(`User ${decoded.username} connected with socket ID: ${socket.id}`); // Log the username and socket ID of the connected user
   } catch(error) {
     console.log("Invalid token, disconnecting");

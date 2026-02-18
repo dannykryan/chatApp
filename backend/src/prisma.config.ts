@@ -3,10 +3,12 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
-let dbUrl: string | undefined = process.env.SUPABASE_DB_URL;
-if (!dbUrl) {
+let directUrl: string | undefined = process.env.DIRECT_URL;
+let dbUrl = process.env.DATABASE_URL;
+
+if (!directUrl) {
   throw new Error(
-    "DATABASE_URL environment variable is not set. Please set it to your database connection string."
+    "DIRECT_URL environment variable is not set. Please set it to your database connection string."
   );
 }
 
@@ -17,6 +19,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: dbUrl,
+    url: directUrl,
   },
 });

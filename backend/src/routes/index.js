@@ -1,6 +1,7 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import prisma from "../lib/prisma.js";
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || "SECRET_KEY";
@@ -16,22 +17,25 @@ router.post("/auth/register", async (req, res) => {
       return res.status(400).json({ error: "All fields required" });
     }
 
-    const passwordHash = await bcrypt.hashSync(password, saltRounds);
+    const passwordHash = await bcrypt.hash(password, saltRounds);
 
-    const { data, error } = await supabase
-      .from("users")
-      .insert([{ username, email, password_hash: passwordHash }])
-      .select() // Return the inserted data
-      .single();
+    const user = await prisma.user.create({
+      data: {
+        username,
+        email,
+        passwordHash,
+      },
+    });
 
-    if (error) {
-      return res.status(500).json({ error: error.message });
+    if (!user) {
+      return res.status(500).json({ error: "User creation failed" });
     }
 
     res
       .status(201)
-      .json({ message: "User registered successfully", user: data.id });
+      .json({ message: "User registered successfully", user: user.id });
   } catch (error) {
+    console.error("Full error:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -45,19 +49,17 @@ router.post("/auth/login", async (req, res) => {
       return res.status(400).json({ error: "All fields required" });
     }
 
-    const { data: user, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("email", email)
-      .single();
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
 
-    if (error || !user) {
+    if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    const passwordMatch = await bcrypt.compareSync(
+    const passwordMatch = await bcrypt.compare(
       password,
-      user.password_hash,
+      user.passwordHash,
     );
 
     // Compare password with the hashed password stored in the database
@@ -74,6 +76,7 @@ router.post("/auth/login", async (req, res) => {
 
     res.json({ token, username: user.username });
   } catch (error) {
+    console.error("Full error:", error);
     res.status(500).json({ error: error.message });
   }
 });
