@@ -14,17 +14,26 @@ enum UserRole {
   ADMIN
 }
 
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
 model User {
   // User role
   role UserRole @default(USER)
-  
+
   // Public fields
   id                  String   @id @default(uuid())
   username            String   @unique
+  firstName           String?
+  lastName            String?
   email               String   @unique
   profilePictureUrl   String?
   bio                 String?
   lastOnline          DateTime?
+  isOnline            Boolean  @default(false)
 
   // Private Fields
   createdAt           DateTime @default(now())
@@ -35,15 +44,28 @@ model User {
 
   // Spotify integration fields
   spotifyId           String?  @unique
-  spotifyAccessToken  String?
-  spotifyRefreshToken String?
+  spotifyAccessToken  String? // This will be encrypted in the application layer before being stored in the database
+  spotifyRefreshToken String? // This will be encrypted in the application layer before being stored in the database
   spotifyDisplayName  String?
 
   // Relations
-  posts              Post[]
-  messages           Message[]
-  
-  // Mixtapes/friends/chat relations to be added later
+  posts                    Post[]
+  messages                 Message[]
+  sentFriendRequests       FriendRequest[] @relation("SentRequests")
+  receivedFriendRequests   FriendRequest[] @relation("ReceivedRequests")
+}
+
+model FriendRequest {
+  id         String   @id @default(uuid())
+  senderId   String
+  receiverId String
+  status     FriendRequestStatus @default(PENDING)
+  createdAt  DateTime @default(now())
+
+  sender   User @relation("SentRequests", fields: [senderId], references: [id])
+  receiver User @relation("ReceivedRequests", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
 }
 
 model Post {
