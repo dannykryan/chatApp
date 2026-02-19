@@ -131,7 +131,11 @@ router.get("/user/:username", async (req, res) => {
         firstName: true, 
         lastName: true, 
         profilePictureUrl: true, 
-        bio: true 
+        bio: true,
+        lastOnline: true,
+        isOnline: true,
+        spotifyDisplayName: true,
+        createdAt: true,
       },
     });
 
