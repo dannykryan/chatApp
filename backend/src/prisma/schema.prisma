@@ -20,7 +20,7 @@ model User {
 
   // Private Fields
   createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  updatedAt           DateTime? @updatedAt
 
   // Authentication fields
   passwordHash        String
