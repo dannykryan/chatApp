@@ -2,9 +2,10 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
+import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "SECRET_KEY";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const saltRounds = 10;
 
