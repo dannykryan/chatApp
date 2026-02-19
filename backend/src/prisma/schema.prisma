@@ -10,12 +10,32 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(uuid())
-  username      String   @unique
-  email         String   @unique
-  passwordHash  String
-  posts         Post[]
-  messages  Message[]
+  // Public fields
+  id                  String   @id @default(uuid())
+  username            String   @unique
+  email               String   @unique
+  profilePictureUrl   String?
+  bio                 String?
+  lastOnline          DateTime?
+
+  // Private Fields
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Authentication fields
+  passwordHash        String
+
+  // Spotify integration fields
+  spotifyId           String?  @unique
+  spotifyAccessToken  String?
+  spotifyRefreshToken String?
+  spotifyDisplayName  String?
+
+  // Relations
+  posts              Post[]
+  messages           Message[]
+  
+  // Mixtapes/friends/chat relations to be added later
 }
 
 model Post {
