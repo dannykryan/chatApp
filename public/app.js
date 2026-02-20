@@ -121,6 +121,31 @@ document.getElementById("login-form").addEventListener("submit", (e) => {
     });
 });
 
+// View user profile
+document.getElementById("user-avatar").addEventListener("click", () => {
+    const JWTToken = localStorage.getItem("token");
+    fetch("/api/user/me", {
+        headers: {
+            "Authorization": `Bearer ${JWTToken}`,
+        },
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        if (!data.username) {
+            alert("Failed to fetch user profile: " + data.error);
+        }
+    document.querySelector(".login-container").classList.add("d-none");
+    document.querySelector(".chat-container").classList.add("d-none");
+    document.getElementById("user-profile-container").classList.remove("d-none");
+    document.getElementById("profile-info").textContent = `Username: ${data.username}, Email: ${data.email}, Online: ${data.isOnline}, Last Online: ${new Date(data.lastOnline).toLocaleString()}, Profile Picture URL: ${data.profilePictureUrl}`;
+    })
+    .catch((error) => {
+        console.error("Error fetching profile:", error);
+        alert("An error occurred while fetching the profile.");
+    });
+});
+
+
 // Message sending
 document.getElementById("messages-form").addEventListener("submit", (e) => {
   e.preventDefault();
