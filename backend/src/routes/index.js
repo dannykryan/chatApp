@@ -82,6 +82,22 @@ router.post("/auth/login", async (req, res) => {
   }
 });
 
+router.post("/auth/logout", verifyToken, async (req, res) => {
+  try {
+    await prisma.user.update({
+      where: { id: req.user.userId },
+      data: {
+        isOnline: false,
+        lastOnline: new Date(),
+      },
+    });
+
+    res.json({ message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get("/user/me", verifyToken, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
