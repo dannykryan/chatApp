@@ -65,6 +65,11 @@ io.on("connect", async (socket) => {
     io.emit("MessageFromServerToAllClients", newMessage); // Log the message received from the client
   });
 
+  socket.on("chatMessage", ({ username, text }) => {
+    const senderUsername = socket.user?.username || username;
+    io.emit("chatMessage", `${senderUsername}: ${text}`);
+  });
+
   socket.on("disconnect", async () => {
     if (socket.user) {
       await prisma.user.update({

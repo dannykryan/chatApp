@@ -9,13 +9,17 @@ export default function Navbar() {
   return (
     <nav className="bg-gray-800 p-4 flex justify-between items-center">
       <div className="text-white text-lg font-bold">Chat App</div>
-      <LogoutButton />
       <div className="flex items-center space-x-4">
+        <LogoutButton />
         {user && (
           <>
-            <span className="text-gray-300">{user.username}</span>
-          </>
-        )}
+            <img
+                src={user.profilePictureUrl || "/default-profile.png"}
+                alt="Profile"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            </>
+          )}
       </div>
     </nav>
   );

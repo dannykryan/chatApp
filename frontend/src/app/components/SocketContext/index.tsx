@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 import { AuthContext } from "../AuthProvider";
 
@@ -7,34 +7,32 @@ type SocketContextType = {
   socket: Socket | null;
 };
 
-const SocketContext = createContext<SocketContextType>({ socket: null });
+export const SocketContext = createContext<SocketContextType>({ socket: null });
 
 export default function SocketProvider({ children }: { children: React.ReactNode }) {
-  const socketRef = useRef<Socket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const { token } = useContext(AuthContext);
 
   useEffect(() => {
     if (token) {
       const newSocket = io("http://localhost:4000", { auth: { token } });
-      socketRef.current = newSocket;
+      setSocket(newSocket);
 
-      newSocket.on("connect", () => setIsConnected(true));
-      newSocket.on("disconnect", () => setIsConnected(false));
+      newSocket.on("connect", () => console.log("connected"));
+      newSocket.on("disconnect", () => console.log("disconnected"));
       newSocket.on("welcomeMessage", (data: string) => console.log(data));
       newSocket.on("userOnline", ({ userId }: { userId: string }) => console.log(`User ${userId} is online`));
       newSocket.on("userOffline", ({ userId }: { userId: string }) => console.log(`User ${userId} is offline`));
 
       return () => {
         newSocket.disconnect();
-        socketRef.current = null;
-        setIsConnected(false);
+        setSocket(null);
       };
     }
   }, [token]);
 
   return (
-    <SocketContext.Provider value={{ socket: socketRef.current }}>
+    <SocketContext.Provider value={{ socket }}>
       {children}
     </SocketContext.Provider>
   );

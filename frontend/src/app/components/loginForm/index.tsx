@@ -17,7 +17,7 @@ const Login: React.FC = () => {
     }
   }, [token, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
     setError("");
 
@@ -72,6 +72,9 @@ const Login: React.FC = () => {
       <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
         Login
       </button>
+      <a href="/register" className="block mt-4 text-center text-blue-600 hover:underline">
+        Don't have an account? Register here.
+      </a>
     </form>
   );
 };

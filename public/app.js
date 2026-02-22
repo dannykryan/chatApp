@@ -3,7 +3,7 @@ let socket = null;
 function initializeSocket() {
   const JWTToken = localStorage.getItem("token");
 
-  socket = io("http://localhost:3000", {
+  socket = io("http://localhost:4000", {
     auth: {
       token: JWTToken,
     },
