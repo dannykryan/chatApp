@@ -2,22 +2,32 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
 import { AuthContext } from "../components/AuthProvider";
 import { SocketContext } from "../components/SocketContext";
+import Image from "next/image";
+import { FaUserCircle } from "react-icons/fa";
+
+type Message = {
+  text: string;
+  username: string;
+  profilePictureUrl: string;
+};
 
 export default function Chat() {
   const [userMessage, setUserMessage] = useState("");
-  const [messages, setMessages] = useState<string[]>([
-    "test message",
-    "test message 2",
+  const [messages, setMessages] = useState<Message[]>([
+    { text: "test message", username: "Stouffer", profilePictureUrl: "/stouffer-avatar.webp" },
+    { text: "another message", username: "Hulk", profilePictureUrl: "/hulk-avatar.jpg" },
   ]);
   const { user } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
+
+  console.log("Current user:", user);
 
   const messagesContainerRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     if (!socket) return;
 
-    const handleIncomingMessage = (msg: string) => {
+    const handleIncomingMessage = (msg: Message) => {
       setMessages((prev) => [...prev, msg]);
     };
 
@@ -36,13 +46,18 @@ export default function Chat() {
     }
   }, [messages]);
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
     if (!userMessage.trim() || !socket) return;
 
-    socket.emit("chatMessage", { username: user?.username, text: userMessage });
+    socket.emit("chatMessage", { text: userMessage, username: user?.username || "Unknown User", profilePictureUrl: user?.profilePictureUrl || "/default-profile.png" });
     setUserMessage(""); // clear input, but don't push to messages here
   }
+
+
+  messages.forEach((msg) => {
+    console.log(`Message from ${msg.username}: ${msg.text}`);
+  }); 
 
   return (
     <div className="chat-container flex flex-col w-full h-[90vh] max-w-3xl mx-auto p-4">
@@ -53,9 +68,17 @@ export default function Chat() {
         {messages.map((message, index) => (
           <li
             key={index}
-            className="px-4 py-2 rounded-lg bg-white shadow-sm max-w-[80%]"
+            className="px-4 py-2 rounded-lg bg-white shadow-sm flex items-center gap-2"
           >
-            {message}
+              <Image
+                src={message.profilePictureUrl || "/default-profile-2.png"}
+                alt="Profile"
+                width={32}
+                height={32}
+                className="rounded-full object-cover"
+                style={{ width: "32px !important", height: "32px !important", minWidth: "32px", minHeight: "32px", maxWidth: "32px", maxHeight: "32px" }}
+              />
+            <span className="font-semibold">{message.username}:</span> {message.text}
           </li>
         ))}
       </ul>
