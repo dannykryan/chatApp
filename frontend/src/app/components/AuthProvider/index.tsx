@@ -13,15 +13,31 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState("");
 
+  // Load token from localStorage on mount
   useEffect(() => {
-    let storedToken: string | null = null;
-    async function fetchToken() {
-      storedToken = localStorage.getItem("token");
-    }
-    fetchToken().then(() => {
-      if (storedToken) setToken(storedToken);
-    });
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) setToken(storedToken);
   }, []);
+
+  // Whenever token changes, fetch the current user
+  useEffect(() => {
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
+    fetch(`http://localhost:4000/api/user/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => setUser(data))
+      .catch((err) => {
+        console.error("Failed to fetch user:", err);
+        setUser(null);
+      });
+  }, [token]);
 
   return (
     <AuthContext.Provider value={{ user, token, setUser, setToken }}>

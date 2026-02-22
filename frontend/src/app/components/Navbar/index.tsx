@@ -13,11 +13,13 @@ export default function Navbar() {
         <LogoutButton />
         {user && (
           <>
+            <a href={`/user/${user.username}`} className="text-gray-300 hover:text-white">
             <img
                 src={user.profilePictureUrl || "/default-profile.png"}
-                alt="Profile"
+                alt={`${user.username}'s profile picture`}
                 className="w-8 h-8 rounded-full object-cover"
               />
+            </a>
             </>
           )}
       </div>
