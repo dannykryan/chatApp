@@ -12,11 +12,13 @@ export const AuthContext = createContext({
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState("");
+  const [mounted, setMounted] = useState(false);
 
   // Load token from localStorage on mount
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) setToken(storedToken);
+    setMounted(true);
   }, []);
 
   // Whenever token changes, fetch the current user

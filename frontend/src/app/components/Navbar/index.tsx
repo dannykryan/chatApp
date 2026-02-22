@@ -8,8 +8,8 @@ export default function Navbar() {
   const { user } = useContext(AuthContext);
   return (
     <nav className="bg-gray-800 p-4 flex justify-between items-center">
-      <div className="text-white text-lg font-bold">Chat App</div>
-      <div className="flex items-center space-x-4">
+      <a href="/chat" className="text-white text-lg font-bold">Chat</a>
+        <div className="flex items-center space-x-4">
         <LogoutButton />
         {user && (
           <>

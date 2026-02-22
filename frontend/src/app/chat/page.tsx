@@ -70,14 +70,16 @@ export default function Chat() {
             key={index}
             className="px-4 py-2 rounded-lg bg-white shadow-sm flex items-center gap-2"
           >
-              <Image
-                src={message.profilePictureUrl || "/default-profile-2.png"}
-                alt="Profile"
-                width={32}
-                height={32}
-                className="rounded-full object-cover"
-                style={{ width: "32px !important", height: "32px !important", minWidth: "32px", minHeight: "32px", maxWidth: "32px", maxHeight: "32px" }}
-              />
+              <a href={`/user/${message.username}`} className="text-gray-300 hover:text-white">
+                <Image
+                  src={message.profilePictureUrl || "/default-profile-2.png"}
+                  alt={`${message.username}'s profile picture`}
+                  width={32}
+                  height={32}
+                  className="rounded-full object-cover"
+                  style={{ width: "32px !important", height: "32px !important", minWidth: "32px", minHeight: "32px", maxWidth: "32px", maxHeight: "32px" }}
+                />
+              </a>
             <span className="font-semibold">{message.username}:</span> {message.text}
           </li>
         ))}
