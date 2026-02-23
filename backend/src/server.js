@@ -40,7 +40,7 @@ io.on("connect", async (socket) => {
     // Mark user as online
     await prisma.user.update({
       where: { id: decoded.userId },
-      data: { isOnline: true, lastOnline: new Date() }
+      data: { isOnline: true, lastOnline: new Date() },
     });
 
     socket.broadcast.emit("userOnline", { userId: decoded.userId });
@@ -65,9 +65,10 @@ io.on("connect", async (socket) => {
     io.emit("MessageFromServerToAllClients", newMessage); // Log the message received from the client
   });
 
-  socket.on("chatMessage", ({ username, text }) => {
-    const senderUsername = socket.user?.username || username;
-    io.emit("chatMessage", `${senderUsername}: ${text}`);
+  socket.on("chatMessage", (payload) => {
+    console.log("Received chatMessage payload:", payload);
+    const { text, username, profilePictureUrl } = payload;
+    io.emit("chatMessage", { text, username, profilePictureUrl });
   });
 
   socket.on("disconnect", async () => {

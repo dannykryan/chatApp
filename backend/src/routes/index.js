@@ -49,23 +49,24 @@ router.post("/auth/login", async (req, res) => {
     }
 
     const user = await prisma.user.findFirst({
-      where: { 
-        OR: [
-          { email: usernameOrEmail },
-          { username: usernameOrEmail }
-        ]
-       },
+      where: {
+        OR: [{ email: usernameOrEmail }, { username: usernameOrEmail }],
+      },
     });
 
     if (!user) {
-      return res.status(401).json({ error: "Invalid email/username or password" });
-    }
+      return res
+        .status(401)
+        .json({ error: "Invalid email/username or password" });
+    } 
 
     const passwordMatch = await bcrypt.compare(password, user.passwordHash);
 
     // Compare password with the hashed password stored in the database
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Invalid email/username or password" });
+      return res
+        .status(401)
+        .json({ error: "Invalid email/username or password" });
     }
 
     // Generate JWT token
@@ -75,7 +76,11 @@ router.post("/auth/login", async (req, res) => {
       { expiresIn: "7d" },
     );
 
-    res.json({ token, username: user.username, profilePictureUrl: user.profilePictureUrl });
+    res.json({
+      token,
+      username: user.username,
+      profilePictureUrl: user.profilePictureUrl,
+    });
   } catch (error) {
     console.error("Full error:", error);
     res.status(500).json({ error: error.message });
@@ -102,9 +107,9 @@ router.get("/user/me", verifyToken, async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.user.userId },
-      select: { 
-        id: true, 
-        username: true, 
+      select: {
+        id: true,
+        username: true,
         email: true,
         profilePictureUrl: true,
         bio: true,
@@ -146,12 +151,12 @@ router.get("/user/:username", async (req, res) => {
 
     const user = await prisma.user.findUnique({
       where: { username },
-      select: { 
-        id: true, 
-        username: true, 
-        firstName: true, 
-        lastName: true, 
-        profilePictureUrl: true, 
+      select: {
+        id: true,
+        username: true,
+        firstName: true,
+        lastName: true,
+        profilePictureUrl: true,
         bio: true,
         lastOnline: true,
         isOnline: true,

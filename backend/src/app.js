@@ -1,8 +1,8 @@
 import express from "express";
 import routes from "./routes/index.js";
 
-  // Allow CORS for localhost:3000 (React dev server)
-  import cors from "cors";
+// Allow CORS for localhost:3000 (React dev server)
+import cors from "cors";
 
 const app = express();
 
