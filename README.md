@@ -1,8 +1,8 @@
 # chatApp | Real-Time Messaging Engine
-A high-performance, full-stack communication platform built to explore event-driven architecture and relational data modeling. This project was developed as part of a #100DaysOfCode sprint to bridge the gap between rapid agency delivery and deep-dive technical architecture.
+A full-stack communication platform built to explore event-driven architecture and relational data modeling. This project was developed as part of a #100DaysOfCode sprint to bridge the gap between rapid agency delivery and deep-dive technical architecture.
 
 ## 🚀 The Tech Stack
-Frontend: Next.js 14 (App Router), React, Tailwind CSS
+Frontend: React, Next.js 14 (App Router), React, Tailwind CSS
 
 Backend: Node.js, Express, TypeScript
 
