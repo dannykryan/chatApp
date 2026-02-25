@@ -2,7 +2,7 @@
 A full-stack communication platform built to explore event-driven architecture and relational data modeling. This project was developed as part of a #100DaysOfCode sprint to bridge the gap between rapid agency delivery and deep-dive technical architecture.
 
 ## 🚀 The Tech Stack
-Frontend: React, Next.js 14 (App Router), React, Tailwind CSS
+Frontend: Next.js 14 (App Router), React, Tailwind CSS
 
 Backend: Node.js, Express, TypeScript
 
