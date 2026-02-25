@@ -76,7 +76,8 @@ Backend: npm start (Runs on port 4000)
 
 Frontend: npm run dev (Runs on port 3000)
 
-📈 Future Roadmap
+## 📈 Future Roadmap
+
 [ ] Message Persistence: Implement "Load More" pagination for historical chat data.
 
 [ ] Media Support: Integration with Supabase image buckets for image sharing.
