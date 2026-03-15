@@ -34,15 +34,14 @@ const ProfileFriendshipBar = ({
     setFriendCheck(updated);
   }, [authUser, friendUsername]);
 
-    useEffect(() => {
-      setFriendCheck(null);
-    }, [friendUsername]);
+  useEffect(() => {
+    setFriendCheck(null);
+  }, [friendUsername]);
 
   useEffect(() => {
     if (!socket || !authUser) return;
 
     const onFriendRequestUpdated = () => {
-      // only affected users receive this, so just refresh
       refreshFriendStatus();
     };
 
@@ -56,26 +55,44 @@ const ProfileFriendshipBar = ({
     refreshFriendStatus();
   }, [refreshFriendStatus]);
 
-  const onSendFriendRequest = async () => {
-    await handleAddFriend(friendUsername);
-    await refreshFriendStatus();
+  // Immediately update UI when user takes an action
+  // If the backend call fails, revert to previous state to prevent showing incorrect status
+  const optimisticUpdate = async (
+    newStatus: { status: string; isSender: boolean | null },
+    action: () => Promise<void>,
+  ) => {
+    // Store previous state to revert in case of failure
+    const previous = friendCheck;
+    setFriendCheck(newStatus);
+    try {
+      await action();
+    } catch {
+      // Revert to previous state on failure
+      setFriendCheck(previous);
+    }
   };
 
-  const onRemoveFriend = async () => {
-    await handleRemoveFriend(friendUsername);
-    await refreshFriendStatus();
-  };
+  const onSendFriendRequest = () =>
+    optimisticUpdate({ status: "PENDING", isSender: true }, () =>
+      handleAddFriend(friendUsername),
+    );
 
-  const onRespondToRequest = async (accept: boolean) => {
+  const onRemoveFriend = () =>
+    optimisticUpdate({ status: "NONE", isSender: null }, () =>
+      handleRemoveFriend(friendUsername),
+    );
+
+  const onRespondToRequest = (accept: boolean) => {
     if (!friendId || !authUser) return;
-    await handleFriendResponse(friendId, accept);
-    const updated = await checkFriendStatus(friendUsername, authUser.id);
-    setFriendCheck(updated);
+    optimisticUpdate(
+      { status: accept ? "ACCEPTED" : "NONE", isSender: null },
+      () => handleFriendResponse(friendId, accept),
+    );
   };
 
   if (!friendCheck) return null;
 
-  // TODO: Add error handling and loading states for better UX, currently it just won't show any buttons until the check is done. Also consider using a library like react-query for better data fetching management.
+  // TODO: Add error handling for better UX, currently it just won't show any buttons until the check is done. Also consider using a library like react-query for better data fetching management.
   // TODO: Add confirmation modals for actions like removing a friend or accepting/declining requests to prevent accidental clicks.
   // TODO: Reduce code duplication by creating a reusable FriendRequestCard component for the pending request UI, since it has similar structure for both sent and received requests.
   return (
@@ -89,7 +106,7 @@ const ProfileFriendshipBar = ({
       )}
 
       {friendCheck.status === "NONE" && (
-        <Button btnStyle="greenOutline" onClick={onSendFriendRequest} >
+        <Button btnStyle="greenOutline" onClick={onSendFriendRequest}>
           <span className="flex items-center gap-3">
             <FaUserPlus /> Send Friend Request
           </span>
@@ -106,7 +123,10 @@ const ProfileFriendshipBar = ({
         friendCheck.isSender === false &&
         friendId && (
           <div className="gap-2 flex">
-            <Button onClick={() => onRespondToRequest(true)} btnStyle="greenOutline">
+            <Button
+              onClick={() => onRespondToRequest(true)}
+              btnStyle="greenOutline"
+            >
               <span className="flex items-center gap-3">
                 <FaCheck /> Accept Friend Request
               </span>
