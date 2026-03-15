@@ -55,9 +55,13 @@ const handleAddFriend = async (friendUsername: string) => {
 
 // Send request to backend to accept or decline friend request
 const handleFriendResponse = async (
-  friendUsername: string,
-  accept: boolean,
+  senderId: string,
+  friendRequestResponse: boolean,
 ) => {
+  console.log(
+    `Responding to friend request from ${senderId}: ${friendRequestResponse ? "Accept" : "Decline"}`
+  );
+
   try {
     const token = localStorage.getItem("token");
     const res = await fetch("http://localhost:4000/api/friends/respond", {
@@ -66,19 +70,17 @@ const handleFriendResponse = async (
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ friendUsername, accept }),
+      body: JSON.stringify({ senderId, friendRequestResponse }),
     });
+
     const data = await res.json();
     if (res.ok) {
-      alert(accept ? "Friend request accepted!" : "Friend request declined.");
+      alert(friendRequestResponse ? "Friend request accepted!" : "Friend request declined.");
     } else {
       alert(data.error || "Failed to respond to friend request.");
     }
   } catch (err) {
-    alert(
-      "Network error: " +
-        (err instanceof Error ? err.message : "Unknown error"),
-    );
+    alert("Network error: " + (err instanceof Error ? err.message : "Unknown error"));
   }
 };
 

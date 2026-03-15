@@ -135,14 +135,15 @@ router.post("/friends/add", verifyToken, async (req, res) => {
 
 // Additional routes for accepting/rejecting friend requests, removing friends, etc. can be added here
 router.post("/friends/respond", verifyToken, async (req, res) => {
+  console.log("Received friend request response:", req.body);
   try {    
-    const { friendUsername, friendRequestResponse } = req.body;
-    if (!friendUsername || friendRequestResponse === undefined) {
+    const { senderId, friendRequestResponse } = req.body;
+    if (!senderId || friendRequestResponse === undefined) {
       return res.status(400).json({ error: "Sender ID and action are required" });
     }
     const friendRequest = await prisma.friendRequest.findFirst({
       where: {
-        senderId: friendUsername,
+        senderId: senderId,
         receiverId: req.user.userId,
         status: FriendRequestStatus.PENDING,
       },
@@ -159,15 +160,12 @@ router.post("/friends/respond", verifyToken, async (req, res) => {
       });
       res.json({ message: "Friend request accepted" });
     } else if (friendRequestResponse === false) {
-      console.log("Friend request ID:", friendRequest.id);
-      console.log("Status value:", FriendRequestStatus.DECLINED);
       
-      const updated = await prisma.friendRequest.update({
+      const deleted = await prisma.friendRequest.delete({
         where: { id: friendRequest.id },
-        data: { status: FriendRequestStatus.DECLINED },
       });
       
-      console.log("Updated record:", updated);
+      console.log("Deleted record:", deleted);
       res.json({ message: "Friend request declined" });
     } else {
       res.status(400).json({ error: "Invalid action" });

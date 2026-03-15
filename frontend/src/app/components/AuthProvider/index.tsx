@@ -16,34 +16,38 @@ export default function AuthProvider({
 }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
 
-  // Load token from localStorage on mount
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    if (storedToken) setToken(storedToken);
-    setMounted(true);
-  }, []);
-
-  // Whenever token changes, fetch the current user
-  useEffect(() => {
-    if (!token) {
+    if (!storedToken) {
       setUser(null);
+      setToken("");
+      setAuthLoading(false);
       return;
     }
 
-    fetch(`http://localhost:4000/api/user/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    setToken(storedToken);
+
+    fetch("http://localhost:4000/api/user/me", {
+      headers: { Authorization: `Bearer ${storedToken}` },
     })
-      .then((res) => res.json())
-      .then((data) => setUser(data))
-      .catch((err) => {
-        console.error("Failed to fetch user:", err);
-        setUser(null);
-      });
-  }, [token]);
+      .then(async (res) => {
+        if (!res.ok) {
+          localStorage.removeItem("token");
+          setUser(null);
+          setToken("");
+          return null;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data) setUser(data);
+      })
+      .finally(() => setAuthLoading(false));
+  }, []);
+
+  if (authLoading) return null;
 
   return (
     <AuthContext.Provider value={{ user, token, setUser, setToken }}>
