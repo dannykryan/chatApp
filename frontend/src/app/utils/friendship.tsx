@@ -85,16 +85,16 @@ const handleFriendResponse = async (
 };
 
 // Send request to backend to remove friend
-const handleRemoveFriend = async (friendUsername: string) => {
+const handleRemoveFriend = async (username: string) => {
   try {
     const token = localStorage.getItem("token");
     const res = await fetch("http://localhost:4000/api/friends/remove", {
-      method: "POST",
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ friendUsername }),
+      body: JSON.stringify({ username }),
     });
     const data = await res.json();
     if (res.ok) {

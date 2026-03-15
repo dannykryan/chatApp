@@ -9,6 +9,8 @@ import {
 } from "../../utils/friendship";
 import { AuthContext } from "../AuthProvider";
 import { SocketContext } from "../SocketContext";
+import { FaUserPlus, FaCheck, FaTimes } from "react-icons/fa";
+import { FaUserXmark } from "react-icons/fa6";
 
 interface ProfileFriendshipBarProps {
   friendUsername: string;
@@ -53,7 +55,7 @@ const ProfileFriendshipBar = ({
   useEffect(() => {
     if (!authUser) return;
     checkFriendStatus(friendUsername, authUser.id).then(setFriendCheck);
-  }, [friendUsername, authUser])
+  }, [friendUsername, authUser]);
 
   const onSendFriendRequest = async () => {
     await handleAddFriend(friendUsername);
@@ -81,40 +83,40 @@ const ProfileFriendshipBar = ({
   return (
     <>
       {friendCheck.status === "ACCEPTED" && (
-        <Button onClick={onRemoveFriend}>Remove Friend</Button>
+        <Button onClick={onRemoveFriend}>
+          <span className="flex items-center gap-3">
+            <FaUserXmark /> Remove Friend
+          </span>
+        </Button>
       )}
 
       {friendCheck.status === "NONE" && (
         <Button onClick={onSendFriendRequest} btnStyle="green">
-          Send Friend Request
+          <FaUserPlus /> Send Friend Request
         </Button>
       )}
       {friendCheck.status === "PENDING" && friendCheck.isSender === true && (
         <Button btnStyle="green" disabled>
-          Request Sent
+          Friend Request Sent
         </Button>
       )}
       {friendCheck.status === "PENDING" &&
         friendCheck.isSender === false &&
         friendId && (
-          <div className="border-2 border-gray-400 p-4 rounded-lg bg-gray-100">
-            <p className="mb-2 font-bold">
-              {friendUsername} wants to be your friend:
-            </p>
-            <div className="gap-2 flex">
-              <Button
-                onClick={() => onRespondToRequest(true)}
-                btnStyle="primary"
-              >
-                Accept Friend Request
-              </Button>
-              <Button
-                onClick={() => onRespondToRequest(false)}
-                btnStyle="decline"
-              >
-                Decline Friend Request
-              </Button>
-            </div>
+          <div className="gap-2 flex">
+            <Button onClick={() => onRespondToRequest(true)} btnStyle="primary">
+              <span className="flex items-center gap-3">
+                <FaCheck /> Accept Friend Request
+              </span>
+            </Button>
+            <Button
+              onClick={() => onRespondToRequest(false)}
+              btnStyle="decline"
+            >
+              <span className="flex items-center gap-3">
+                <FaTimes /> Decline Friend Request
+              </span>
+            </Button>
           </div>
         )}
     </>

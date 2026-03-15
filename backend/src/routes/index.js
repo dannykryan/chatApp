@@ -264,7 +264,7 @@ router.delete("/friends/remove", verifyToken, async (req, res) => {
     if (!friend) {
       return res.status(404).json({ error: "User not found" });
     }
-    await prisma.friendRequest.deleteMany({
+    const deleted = await prisma.friendRequest.deleteMany({
       where: {
         OR: [
           { senderId: req.user.userId, receiverId: friend.id },
@@ -272,6 +272,16 @@ router.delete("/friends/remove", verifyToken, async (req, res) => {
         ],
       },
     });
+
+    const io = req.app.get("io");
+    const payload = {
+      senderId: req.user.userId,
+      receiverId: friend.id,
+      status: "NONE",
+    };
+
+    io.to(`user:${req.user.userId}`).emit("friendRequestUpdated", payload);
+    io.to(`user:${friend.id}`).emit("friendRequestUpdated", payload);
 
     res.json({ message: "Friend removed successfully" });
   } catch (error) {
