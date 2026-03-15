@@ -83,7 +83,7 @@ const ProfileFriendshipBar = ({
   return (
     <>
       {friendCheck.status === "ACCEPTED" && (
-        <Button onClick={onRemoveFriend}>
+        <Button btnStyle="primaryOutline" onClick={onRemoveFriend}>
           <span className="flex items-center gap-3">
             <FaUserXmark /> Remove Friend
           </span>
@@ -91,27 +91,31 @@ const ProfileFriendshipBar = ({
       )}
 
       {friendCheck.status === "NONE" && (
-        <Button onClick={onSendFriendRequest} btnStyle="green">
-          <FaUserPlus /> Send Friend Request
+        <Button btnStyle="greenOutline" onClick={onSendFriendRequest} >
+          <span className="flex items-center gap-3">
+            <FaUserPlus /> Send Friend Request
+          </span>
         </Button>
       )}
       {friendCheck.status === "PENDING" && friendCheck.isSender === true && (
-        <Button btnStyle="green" disabled>
-          Friend Request Sent
+        <Button btnStyle="greenOutline" disabled>
+          <span className="flex items-center gap-3">
+            <FaUserPlus /> Friend Request Sent
+          </span>
         </Button>
       )}
       {friendCheck.status === "PENDING" &&
         friendCheck.isSender === false &&
         friendId && (
           <div className="gap-2 flex">
-            <Button onClick={() => onRespondToRequest(true)} btnStyle="primary">
+            <Button onClick={() => onRespondToRequest(true)} btnStyle="greenOutline">
               <span className="flex items-center gap-3">
                 <FaCheck /> Accept Friend Request
               </span>
             </Button>
             <Button
               onClick={() => onRespondToRequest(false)}
-              btnStyle="decline"
+              btnStyle="outlineRed"
             >
               <span className="flex items-center gap-3">
                 <FaTimes /> Decline Friend Request
