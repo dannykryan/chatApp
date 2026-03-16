@@ -17,45 +17,30 @@ const checkFriendStatus = async (
   friendUsername: string,
   currentUserId: string,
 ): Promise<CheckFriendStatusResult> => {
+  if (!friendUsername?.trim()) {
+    return { status: "NONE", isSender: null };
+  }
+
   const token = localStorage.getItem("token");
   if (!token) {
     throw new Error("No authentication token found");
   }
 
-  let res: Response;
-  try {
-    res = await fetch(
-      `http://localhost:4000/api/friends/status/${friendUsername}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-  } catch (err) {
-    throw new Error(
-      `Network error while checking friend status: ${
-        err instanceof Error ? err.message : "Unknown error"
-      }`,
-    );
-  }
+  const res = await fetch(`http://localhost:4000/api/friends/status/${friendUsername}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
-  let data: any;
-  try {
-    data = await res.json();
-  } catch {
-    throw new Error("Invalid JSON response from server");
-  }
+  const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
-    throw new Error(
-      data?.error || `Failed to check friend status (${res.status})`,
-    );
+    if (res.status === 404) {
+      return { status: "NONE", isSender: null };
+    }
+    throw new Error(data?.error || `Failed to check friend status (${res.status})`);
   }
 
   const status = data.status as CheckFriendStatusResult["status"];
   const isSender = data.senderId === currentUserId;
-
   return { status, isSender };
 };
 

@@ -17,6 +17,9 @@ export default function UserProfile({
   const { username } = use(params);
   const [user, setUser] = useState<User | null>(null);
 
+  const isOwnProfile = authUser?.username === username;
+  const displayUser = user ?? (isOwnProfile ? authUser : null);
+
   useEffect(() => {
     setUser(null);
   }, [username]);
@@ -32,26 +35,27 @@ export default function UserProfile({
       .catch((err) => console.error("Fetch failed:", err));
   }, [username]);
 
-  if (!user) return <ProfileSkeleton />;
+  if (!displayUser) return <ProfileSkeleton />;
+  console.log("Displaying user:", displayUser);
 
   return (
     <div className="m-4 text-center flex flex-col items-center">
       <Avatar
-        src={user.profilePictureUrl || "/default-profile-2.png"}
-        alt={`${user.username}'s profile picture`}
+        src={displayUser.profilePictureUrl || "/default-profile-2.png"}
+        alt={`${displayUser.username}'s profile picture`}
         size="3xl"
-        status={user.isOnline ? "online" : "offline"}
         showStatus
+        userId={displayUser.id}
       />
-      <h1 className="text-2xl font-bold mb-2">{user.username}</h1>
-      <p className="text-gray-600">{user.bio}</p>
-      <p className="text-gray-600 mt-2">User Since: {new Date(user.createdAt).toLocaleDateString()}</p>
-      <p className="text-gray-600 mt-2">Last online: {user.lastOnline ? new Date(user.lastOnline).toLocaleString() : "N/A"}</p>
+      <h1 className="text-2xl font-bold mb-2">{displayUser.username}</h1>
+      <p className="text-gray-600">{displayUser.bio}</p>
+      <p className="text-gray-600 mt-2">User Since: {new Date(displayUser.createdAt).toLocaleDateString()}</p>
+      <p className="text-gray-600 mt-2">Last online: {displayUser.lastOnline ? new Date(displayUser.lastOnline).toLocaleString() : "N/A"}</p>
       <div className="mt-4">
-        {authUser?.username === user.username ? (
+        {authUser?.username === displayUser.username ? (
           <OwnedProfileActions />
         ) : (
-          <UserProfileActions friendUsername={user.username} friendId={user.id} />
+          <UserProfileActions friendUsername={displayUser.username} friendId={displayUser.id} />
         )}
       </div>
     </div>

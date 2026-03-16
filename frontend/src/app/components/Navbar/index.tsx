@@ -7,6 +7,8 @@ import Avatar from "../Avatar";
 
 export default function Navbar() {
   const { user } = useContext(AuthContext);
+
+  console.log("Navbar user:", user?.id, user?.username);
   return (
     <nav className="bg-gray-800 p-4 flex justify-between items-center">
       <a href="/chat" className="text-white text-lg font-bold">
@@ -24,8 +26,8 @@ export default function Navbar() {
                 src={user.profilePictureUrl}
                 alt={`${user.username} profile picture`}
                 size="md"
-                status="online"
                 showStatus
+                userId={user.id}
               />
             </a>
           </>

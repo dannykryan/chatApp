@@ -63,7 +63,7 @@ export const ConfirmProvider = ({ children }: { children: React.ReactNode }) => 
                 Cancel
               </Button>
               <Button
-                btnStyle={options.confirmStyle ?? "outlineRed"}
+                btnStyle={options.confirmStyle ?? "redOutline"}
                 onClick={() => handleClose(true)}
               >
                 {options.confirmLabel ?? "Confirm"}

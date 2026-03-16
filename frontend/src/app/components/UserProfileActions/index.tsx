@@ -31,9 +31,14 @@ const UserProfileActions = ({
   const confirm = useConfirm();
 
   const refreshFriendStatus = useCallback(async () => {
-    if (!authUser) return;
-    const updated = await checkFriendStatus(friendUsername, authUser.id);
-    setFriendCheck(updated);
+    if (!authUser || !friendUsername) return;
+    try {
+      const updated = await checkFriendStatus(friendUsername, authUser.id);
+      setFriendCheck(updated);
+    } catch (err) {
+      console.error("Failed to refresh friend status:", err);
+      setFriendCheck({ status: "NONE", isSender: null });
+    }
   }, [authUser, friendUsername]);
 
   useEffect(() => {
@@ -93,7 +98,7 @@ const UserProfileActions = ({
       title: "Remove Friend",
       message: `Are you sure you want to remove ${friendUsername} from your friends?`,
       confirmLabel: "Remove",
-      confirmStyle: "outlineRed",
+      confirmStyle: "redOutline",
     }).then((result) => {
       if (result) {
         optimisticUpdate({ status: "NONE", isSender: null }, () =>
@@ -107,7 +112,7 @@ const UserProfileActions = ({
       title: accept ? "Accept Friend Request" : "Decline Friend Request",
       message: `Are you sure you want to ${accept ? "accept" : "decline"} the friend request from ${friendUsername}?`,
       confirmLabel: accept ? "Accept" : "Decline",
-      confirmStyle: accept ? "greenOutline" : "outlineRed",
+      confirmStyle: accept ? "greenOutline" : "redOutline",
     }).then((result) => {
       if (result) {
         if (!friendId || !authUser) return;
@@ -162,7 +167,7 @@ const UserProfileActions = ({
             </Button>
             <Button
               onClick={() => onRespondToRequest(false)}
-              btnStyle="outlineRed"
+              btnStyle="redOutline"
             >
               <span className="flex items-center gap-3">
                 <FaTimes /> Decline Friend Request

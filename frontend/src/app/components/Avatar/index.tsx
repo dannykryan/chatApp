@@ -1,4 +1,5 @@
 "use client";
+import { usePresence } from "../PresenceProvider";
 
 const sizeClasses = {
   sm: "w-6 h-6",
@@ -30,15 +31,26 @@ export default function Avatar({
   src,
   alt,
   size = "md",
-  status,
   showStatus = false,
+  userId,
 }: {
   src?: string;
   alt: string;
   size?: AvatarSize;
-  status?: AvatarStatus;
   showStatus?: boolean;
+  userId?: string;
 }) {
+  const { isUserOnline } = usePresence();
+
+  const resolvedStatus: AvatarStatus | undefined = userId
+    ? isUserOnline(userId)
+      ? "online"
+      : "offline"
+    : undefined;
+
+    const online = userId ? isUserOnline(userId) : undefined;
+    console.log(`Avatar ${alt}: userId=${userId}, online=${online}`);
+
   return (
     <div className={`relative ${sizeClasses[size]}`}>
       <img
@@ -46,11 +58,12 @@ export default function Avatar({
         alt={alt}
         className={`rounded-full object-cover ${sizeClasses[size]}`}
       />
-      {showStatus && status && (
-        <span className={`absolute block rounded-full border-white ${badgeClasses[size]} ${statusClasses[status]} group`}>
-          {/* Tooltip */}
+      {showStatus && resolvedStatus && (
+        <span
+          className={`absolute block rounded-full border-white ${badgeClasses[size]} ${statusClasses[resolvedStatus]} group`}
+        >
           <span className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 px-2 py-1 text-xs bg-black text-white rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap z-10">
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {resolvedStatus.charAt(0).toUpperCase() + resolvedStatus.slice(1)}
           </span>
         </span>
       )}

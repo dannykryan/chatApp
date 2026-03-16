@@ -5,15 +5,11 @@ import { User } from "../../types/user";
 export const AuthContext = createContext({
   user: null as User | null,
   token: "",
-  setUser: (user: User | null) => {},
-  setToken: (token: string) => {},
+  setUser: (_user: User | null) => {},
+  setToken: (_token: string) => {},
 });
 
-export default function AuthProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState("");
   const [authLoading, setAuthLoading] = useState(true);

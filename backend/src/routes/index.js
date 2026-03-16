@@ -4,11 +4,70 @@ import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
 import { FriendRequestStatus } from "@prisma/client";
 import { verifyToken } from "../middleware/verifyToken.js";
+import multer from "multer";
+import { createClient } from "@supabase/supabase-js";
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const saltRounds = 10;
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY // service key here, NOT the anon key
+);
+
+// Store file in memory as a buffer rather than writing to disk
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+  fileFilter: (_, file, cb) => {
+    if (!file.mimetype.startsWith("image/")) {
+      cb(new Error("Only image files are allowed"));
+    } else {
+      cb(null, true);
+    }
+  },
+});
+
+router.post(
+  "/user/me/avatar",
+  verifyToken,
+  upload.single("avatar"),
+  async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file provided" });
+      }
+
+      const fileExt = req.file.originalname.split(".").pop();
+      const fileName = `UserAvatars/${req.user.userId}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("Images")
+        .upload(fileName, req.file.buffer, {
+          contentType: req.file.mimetype,
+          upsert: true,
+        });
+
+      if (uploadError) throw new Error(uploadError.message);
+
+      const { data: urlData } = supabase.storage
+        .from("Images")
+        .getPublicUrl(fileName);
+
+      // Save the new URL to the user's profile in Prisma
+      await prisma.user.update({
+        where: { id: req.user.userId },
+        data: { profilePictureUrl: urlData.publicUrl },
+      });
+
+      res.json({ profilePictureUrl: urlData.publicUrl });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
 
 router.post("/auth/register", async (req, res) => {
   try {
@@ -79,8 +138,10 @@ router.post("/auth/login", async (req, res) => {
 
     res.json({
       token,
+      id: user.id,
       username: user.username,
       profilePictureUrl: user.profilePictureUrl,
+      isOnline: user.isOnline,
     });
   } catch (error) {
     console.error("Full error:", error);
@@ -316,6 +377,7 @@ router.get("/user/me", verifyToken, async (req, res) => {
         profilePictureUrl: true,
         bio: true,
         lastOnline: true,
+        isOnline: true,
         createdAt: true,
         updatedAt: true,
         spotifyDisplayName: true,
@@ -344,6 +406,32 @@ router.delete("/user/me", verifyToken, async (req, res) => {
   }
 });
 
+router.put("/user/me", verifyToken, async (req, res) => {
+  try {
+    const { username, email, bio } = req.body;
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.userId },
+      data: { username, email, bio },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        profilePictureUrl: true,
+        bio: true,
+        lastOnline: true,
+        isOnline: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    res.json(updatedUser);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get("/user/:username", async (req, res) => {
   try {
     const { username } = req.params;
@@ -356,8 +444,6 @@ router.get("/user/:username", async (req, res) => {
       select: {
         id: true,
         username: true,
-        firstName: true,
-        lastName: true,
         profilePictureUrl: true,
         bio: true,
         lastOnline: true,

@@ -26,64 +26,64 @@ const io = new Server(expressServer, {
 
 app.set("io", io);
 
-io.on("connect", async (socket) => {
-  // JWT verification
-  const token = socket.handshake.auth.token; // Get the token from the client's handshake auth data
-  if (!token) {
-    console.log("No token provided, disconnecting");
-    socket.disconnect();
-    return;
-  }
+io.on("connection", async (socket) => {
+  console.log("Socket connected:", socket.id);
 
   try {
+    const token = socket.handshake.auth?.token;
+
+    if (!token) {
+      console.log("No token provided, disconnecting");
+      socket.disconnect(true);
+      return;
+    }
+
     const decoded = jwt.verify(token, JWT_SECRET);
-    socket.user = decoded; // Attach user info to socket
+    console.log("Socket authenticated for userId:", decoded.userId);
 
-    // join private room for this user
-    socket.join(`user:${decoded.userId}`);
+    const userId = decoded.userId;
 
-    // Mark user as online
+    socket.join(`user:${userId}`);
+
     await prisma.user.update({
-      where: { id: decoded.userId },
+      where: { id: userId },
       data: { isOnline: true, lastOnline: new Date() },
     });
 
-    socket.broadcast.emit("userOnline", { userId: decoded.userId });
+    // Notify everyone first
+    io.emit("userOnline", { userId });
 
-    console.log(
-      `User ${decoded.username} connected with socket ID: ${socket.id}`,
-    ); // Log the username and socket ID of the connected user
-  } catch (error) {
-    console.log("Invalid token, disconnecting");
-    socket.disconnect();
-    return;
-  }
+    const onlineUsers = await prisma.user.findMany({
+      where: { isOnline: true },
+      select: { id: true },
+    });
 
-  // socket.emit will emit to THIS specific client
-  socket.emit("welcomeMessage", "Welcome to the chat app!");
+    socket.emit("presence:init", {
+      userIds: onlineUsers.map((u) => u.id),
+    });
 
-  // io.emit will emit to ALL connected clients
-  io.emit("newClient", socket.id);
+    // Handle late presence requests
+    socket.on("presence:request", async () => {
+      console.log("presence:request received from", userId);
+      const onlineUsers = await prisma.user.findMany({
+        where: { isOnline: true },
+        select: { id: true },
+      });
+      socket.emit("presence:init", {
+        userIds: onlineUsers.map((u) => u.id),
+      });
+    });
 
-  socket.on("messageFromClientToServer", (newMessage) => {
-    // io.emit('helloAll', newMessage) // Emit the message to all clients
-    io.emit("MessageFromServerToAllClients", newMessage); // Log the message received from the client
-  });
-
-  socket.on("chatMessage", (payload) => {
-    console.log("Received chatMessage payload:", payload);
-    const { text, username, profilePictureUrl } = payload;
-    io.emit("chatMessage", { text, username, profilePictureUrl });
-  });
-
-  socket.on("disconnect", async () => {
-    if (socket.user) {
+    socket.on("disconnect", async () => {
+      console.log("User going offline:", userId);
       await prisma.user.update({
-        where: { id: socket.user.userId },
+        where: { id: userId },
         data: { isOnline: false, lastOnline: new Date() },
       });
-      socket.broadcast.emit("userOffline", { userId: socket.user.userId });
-      console.log(`User ${socket.user.username} disconnected`);
-    }
-  });
+      io.emit("userOffline", { userId });
+    });
+  } catch (err) {
+    console.log("Socket auth error:", err.message);
+    socket.disconnect(true);
+  }
 });

@@ -88,7 +88,6 @@ export default function Chat() {
                 src={message.profilePictureUrl || "/default-profile-2.png"}
                 alt={`${message.username}'s profile picture`}
                 size="md"
-                status={"online"}
                 showStatus
               />
             </a>

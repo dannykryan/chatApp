@@ -34,6 +34,7 @@ const Login: React.FC = () => {
         setToken(data.token);
         setUser({
           id: data.id,
+          isOnline: data.isOnline,
           username: data.username,
           profilePictureUrl: data.profilePictureUrl,
           createdAt: data.createdAt,
