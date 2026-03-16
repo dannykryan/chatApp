@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useContext, useCallback } from "react";
+import { useConfirm } from "../../hooks/useConfirm/index";
 import Button from "../Button";
 import {
   handleAddFriend,
@@ -27,6 +28,7 @@ const ProfileFriendshipBar = ({
   } | null>(null);
   const { user: authUser } = useContext(AuthContext);
   const { socket } = useContext(SocketContext);
+  const confirm = useConfirm();
 
   const refreshFriendStatus = useCallback(async () => {
     if (!authUser) return;
@@ -73,21 +75,48 @@ const ProfileFriendshipBar = ({
   };
 
   const onSendFriendRequest = () =>
-    optimisticUpdate({ status: "PENDING", isSender: true }, () =>
-      handleAddFriend(friendUsername),
-    );
+    confirm({
+      title: "Send Friend Request",
+      message: `Are you sure you want to send a friend request to ${friendUsername}?`,
+      confirmLabel: "Send",
+      confirmStyle: "greenOutline",
+    }).then((result) => {
+      if (result) {
+        optimisticUpdate({ status: "PENDING", isSender: true }, () =>
+          handleAddFriend(friendUsername),
+        );
+      }
+    });
 
   const onRemoveFriend = () =>
-    optimisticUpdate({ status: "NONE", isSender: null }, () =>
-      handleRemoveFriend(friendUsername),
-    );
+    confirm({
+      title: "Remove Friend",
+      message: `Are you sure you want to remove ${friendUsername} from your friends?`,
+      confirmLabel: "Remove",
+      confirmStyle: "outlineRed",
+    }).then((result) => {
+      if (result) {
+        optimisticUpdate({ status: "NONE", isSender: null }, () =>
+          handleRemoveFriend(friendUsername),
+        );
+      }
+    });
 
   const onRespondToRequest = (accept: boolean) => {
-    if (!friendId || !authUser) return;
-    optimisticUpdate(
-      { status: accept ? "ACCEPTED" : "NONE", isSender: null },
-      () => handleFriendResponse(friendId, accept),
-    );
+    confirm({
+      title: accept ? "Accept Friend Request" : "Decline Friend Request",
+      message: `Are you sure you want to ${accept ? "accept" : "decline"} the friend request from ${friendUsername}?`,
+      confirmLabel: accept ? "Accept" : "Decline",
+      confirmStyle: accept ? "greenOutline" : "outlineRed",
+    }).then((result) => {
+      if (result) {
+        if (!friendId || !authUser) return;
+        optimisticUpdate(
+          { status: accept ? "ACCEPTED" : "NONE", isSender: null },
+          () => handleFriendResponse(friendId, accept),
+        );
+      }
+    });
   };
 
   if (!friendCheck) return null;
