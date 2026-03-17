@@ -117,12 +117,14 @@ const UserProfileActions = ({
       if (result) {
         if (!friendId || !authUser) return;
         optimisticUpdate(
-          { status: accept ? "ACCEPTED" : "NONE", isSender: null },
+          { status: accept ? "FRIENDS" : "NONE", isSender: null },
           () => handleFriendResponse(friendId, accept),
         );
       }
     });
   };
+
+  console.log("Friend check status:", friendCheck);
 
   if (!friendCheck) return null;
 
@@ -131,7 +133,7 @@ const UserProfileActions = ({
   // TODO: Reduce code duplication by creating a reusable FriendRequestCard component for the pending request UI, since it has similar structure for both sent and received requests.
   return (
     <>
-      {friendCheck.status === "ACCEPTED" && (
+      {friendCheck.status === "FRIENDS" && (
         <Button btnStyle="primaryOutline" onClick={onRemoveFriend}>
           <span className="flex items-center gap-3">
             <FaUserXmark /> Remove Friend

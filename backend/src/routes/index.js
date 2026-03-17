@@ -2,7 +2,7 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
-import { FriendRequestStatus } from "@prisma/client";
+import { FriendStatus } from "@prisma/client";
 import { verifyToken } from "../middleware/verifyToken.js";
 import multer from "multer";
 import { createClient } from "@supabase/supabase-js";
@@ -14,7 +14,7 @@ const saltRounds = 10;
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY // service key here, NOT the anon key
+  process.env.SUPABASE_SERVICE_KEY, // service key here, NOT the anon key
 );
 
 // Store file in memory as a buffer rather than writing to disk
@@ -66,7 +66,7 @@ router.post(
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
 );
 
 router.post("/auth/register", async (req, res) => {
@@ -157,7 +157,6 @@ router.post("/friends/add", verifyToken, async (req, res) => {
       return res.status(400).json({ error: "Friend username is required" });
     }
 
-    // Find the receiver user by username
     const receiver = await prisma.user.findUnique({
       where: { username: friendUsername },
     });
@@ -166,37 +165,37 @@ router.post("/friends/add", verifyToken, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Check if a request already exists in either direction
-    const existingRequest = await prisma.friendRequest.findFirst({
+    // Check if a relationship already exists in either direction
+    const existing = await prisma.friends.findFirst({
       where: {
         OR: [
-          { senderId: req.user.userId, receiverId: receiver.id },
-          { senderId: receiver.id, receiverId: req.user.userId },
+          { userId1: req.user.userId, userId2: receiver.id },
+          { userId1: receiver.id, userId2: req.user.userId },
         ],
       },
     });
 
-    if (existingRequest) {
+    if (existing) {
       return res.status(409).json({ error: "Friend request already exists" });
     }
 
-    const created = await prisma.friendRequest.create({
+    const created = await prisma.friends.create({
       data: {
-        senderId: req.user.userId,
-        receiverId: receiver.id,
-        status: FriendRequestStatus.PENDING,
+        userId1: req.user.userId,
+        userId2: receiver.id,
+        status: FriendStatus.PENDING,
       },
     });
 
     const io = req.app.get("io");
     io.to(`user:${req.user.userId}`).emit("friendRequestUpdated", {
-      senderId: created.senderId,
-      receiverId: created.receiverId,
+      userId1: created.userId1,
+      userId2: created.userId2,
       status: created.status,
     });
     io.to(`user:${receiver.id}`).emit("friendRequestUpdated", {
-      senderId: created.senderId,
-      receiverId: created.receiverId,
+      userId1: created.userId1,
+      userId2: created.userId2,
       status: created.status,
     });
 
@@ -208,56 +207,63 @@ router.post("/friends/add", verifyToken, async (req, res) => {
 
 // Additional routes for accepting/rejecting friend requests, removing friends, etc. can be added here
 router.post("/friends/respond", verifyToken, async (req, res) => {
-  console.log("Received friend request response:", req.body);
-
   try {
     const { senderId, friendRequestResponse } = req.body;
 
     if (!senderId || friendRequestResponse === undefined) {
-      return res
-        .status(400)
-        .json({ error: "Sender ID and action are required" });
+      return res.status(400).json({ error: "Sender ID and action are required" });
     }
 
-    const friendRequest = await prisma.friendRequest.findFirst({
+    // Sender is userId1, current user is userId2
+    const friendRecord = await prisma.friends.findFirst({
       where: {
-        senderId,
-        receiverId: req.user.userId,
-        status: FriendRequestStatus.PENDING,
+        userId1: senderId,
+        userId2: req.user.userId,
+        status: FriendStatus.PENDING,
       },
     });
 
-    if (!friendRequest) {
+    if (!friendRecord) {
       return res.status(404).json({ error: "Friend request not found" });
     }
 
     const io = req.app.get("io");
 
     if (friendRequestResponse === true) {
-      const updated = await prisma.friendRequest.update({
-        where: { id: friendRequest.id },
-        data: { status: FriendRequestStatus.ACCEPTED },
+      const updated = await prisma.friends.update({
+        where: {
+          userId1_userId2: {
+            userId1: friendRecord.userId1,
+            userId2: friendRecord.userId2,
+          },
+        },
+        data: { status: FriendStatus.FRIENDS },
       });
 
-      io.to(`user:${updated.senderId}`).emit("friendRequestUpdated", updated);
-      io.to(`user:${updated.receiverId}`).emit("friendRequestUpdated", updated);
+      io.to(`user:${updated.userId1}`).emit("friendRequestUpdated", updated);
+      io.to(`user:${updated.userId2}`).emit("friendRequestUpdated", updated);
 
       return res.json({ message: "Friend request accepted" });
     }
 
     if (friendRequestResponse === false) {
-      const deleted = await prisma.friendRequest.delete({
-        where: { id: friendRequest.id },
+      const deleted = await prisma.friends.delete({
+        where: {
+          userId1_userId2: {
+            userId1: friendRecord.userId1,
+            userId2: friendRecord.userId2,
+          },
+        },
       });
 
-      io.to(`user:${deleted.senderId}`).emit("friendRequestUpdated", {
-        senderId: deleted.senderId,
-        receiverId: deleted.receiverId,
+      io.to(`user:${deleted.userId1}`).emit("friendRequestUpdated", {
+        userId1: deleted.userId1,
+        userId2: deleted.userId2,
         status: "NONE",
       });
-      io.to(`user:${deleted.receiverId}`).emit("friendRequestUpdated", {
-        senderId: deleted.senderId,
-        receiverId: deleted.receiverId,
+      io.to(`user:${deleted.userId2}`).emit("friendRequestUpdated", {
+        userId1: deleted.userId1,
+        userId2: deleted.userId2,
         status: "NONE",
       });
 
@@ -287,23 +293,23 @@ router.get("/friends/status/:friendUsername", verifyToken, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const friendRequest = await prisma.friendRequest.findFirst({
+    const friendRecord = await prisma.friends.findFirst({
       where: {
         OR: [
-          { senderId: req.user.userId, receiverId: friend.id },
-          { senderId: friend.id, receiverId: req.user.userId },
+          { userId1: req.user.userId, userId2: friend.id },
+          { userId1: friend.id, userId2: req.user.userId },
         ],
       },
     });
 
-    if (!friendRequest) {
+    if (!friendRecord) {
       return res.json({ status: "NONE" });
     }
 
     res.json({
-      status: friendRequest.status,
-      senderId: friendRequest.senderId,
-      receiverId: friendRequest.receiverId,
+      status: friendRecord.status,
+      userId1: friendRecord.userId1,
+      userId2: friendRecord.userId2,
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -314,7 +320,7 @@ router.get("/friends/status/:friendUsername", verifyToken, async (req, res) => {
 router.delete("/friends/remove", verifyToken, async (req, res) => {
   try {
     const { username } = req.body;
-    console.log("Request body:", req.body);
+
     if (!username) {
       return res.status(400).json({ error: "Friend username is required" });
     }
@@ -322,22 +328,24 @@ router.delete("/friends/remove", verifyToken, async (req, res) => {
     const friend = await prisma.user.findUnique({
       where: { username },
     });
+
     if (!friend) {
       return res.status(404).json({ error: "User not found" });
     }
-    const deleted = await prisma.friendRequest.deleteMany({
+
+    await prisma.friends.deleteMany({
       where: {
         OR: [
-          { senderId: req.user.userId, receiverId: friend.id },
-          { senderId: friend.id, receiverId: req.user.userId },
+          { userId1: req.user.userId, userId2: friend.id },
+          { userId1: friend.id, userId2: req.user.userId },
         ],
       },
     });
 
     const io = req.app.get("io");
     const payload = {
-      senderId: req.user.userId,
-      receiverId: friend.id,
+      userId1: req.user.userId,
+      userId2: friend.id,
       status: "NONE",
     };
 

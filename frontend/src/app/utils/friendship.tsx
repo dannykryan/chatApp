@@ -40,7 +40,7 @@ const checkFriendStatus = async (
   }
 
   const status = data.status as CheckFriendStatusResult["status"];
-  const isSender = data.senderId === currentUserId;
+  const isSender = data.userId1 === currentUserId;
   return { status, isSender };
 };
 
