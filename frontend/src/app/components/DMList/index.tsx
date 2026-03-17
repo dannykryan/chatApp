@@ -2,26 +2,7 @@
 import { useContext } from "react";
 import { AuthContext } from "../AuthProvider";
 import Avatar from "../Avatar";
-
-interface RoomMember {
-  userId: string;
-  user: {
-    id: string;
-    username: string;
-    profilePictureUrl: string | null;
-    isOnline: boolean;
-  };
-}
-
-interface Room {
-  id: string;
-  name: string | null;
-  type: "PUBLIC_BOARD" | "PRIVATE_GROUP" | "DIRECT_MESSAGE";
-  imageUrl: string | null;
-  description: string | null;
-  isPublic: boolean;
-  members: RoomMember[];
-}
+import { Room } from "../../types/dashboard";
 
 interface DMListProps {
   rooms: Room[];

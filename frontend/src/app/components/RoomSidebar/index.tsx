@@ -3,34 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../AuthProvider";
 import { FaEnvelope } from "react-icons/fa";
 import RoomAvatar from "../RoomAvatar";
-
-interface RoomMember {
-  userId: string;
-  user: {
-    id: string;
-    username: string;
-    profilePictureUrl: string | null;
-    isOnline: boolean;
-  };
-}
-
-interface Room {
-  id: string;
-  name: string | null;
-  type: "PUBLIC_BOARD" | "PRIVATE_GROUP" | "DIRECT_MESSAGE";
-  imageUrl: string | null;
-  description: string | null;
-  isPublic: boolean;
-  members: RoomMember[];
-}
-
-interface RoomSidebarProps {
-  selectedRoomId: string | null;
-  onSelectRoom: (room: Room) => void;
-  onSelectDMs: () => void;
-  onRoomsLoaded: (rooms: Room[]) => void;
-  showingDMs: boolean;
-}
+import { Room, RoomSidebarProps } from "../../types/dashboard";
 
 export default function RoomSidebar({
   selectedRoomId,
