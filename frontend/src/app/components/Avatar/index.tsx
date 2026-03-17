@@ -51,13 +51,30 @@ export default function Avatar({
     const online = userId ? isUserOnline(userId) : undefined;
     console.log(`Avatar ${alt}: userId=${userId}, online=${online}`);
 
+    const textClasses = {
+    sm: "text-xs",
+    md: "text-xs",
+    lg: "text-sm",
+    xl: "text-base",
+    "2xl": "text-xl",
+    "3xl": "text-2xl",
+  } as const;
+
   return (
     <div className={`relative ${sizeClasses[size]}`}>
-      <img
-        src={src}
-        alt={alt}
-        className={`rounded-full object-cover ${sizeClasses[size]}`}
-      />
+      {src ? (
+        <img
+          src={src}
+          alt={alt}
+          className={`rounded-full object-cover ${sizeClasses[size]}`}
+        />
+      ) : (
+        <div
+          className={`rounded-full bg-purple flex items-center justify-center text-white font-semibold ${sizeClasses[size]} ${textClasses[size]}`}
+        >
+          {alt.charAt(0).toUpperCase()}
+        </div>
+      )}
       {showStatus && resolvedStatus && (
         <span
           className={`absolute block rounded-full border-white ${badgeClasses[size]} ${statusClasses[resolvedStatus]} group`}

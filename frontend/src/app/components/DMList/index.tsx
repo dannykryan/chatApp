@@ -1,6 +1,7 @@
 "use client";
 import { useContext } from "react";
 import { AuthContext } from "../AuthProvider";
+import Avatar from "../Avatar";
 
 interface RoomMember {
   userId: string;
@@ -72,24 +73,22 @@ export default function DMList({ rooms, selectedRoomId, onSelectRoom }: DMListPr
               {/* Avatar */}
               <div className="relative shrink-0">
                 {partner.profilePictureUrl ? (
-                  <img
-                    src={partner.profilePictureUrl}
-                    alt={partner.username}
-                    className="w-9 h-9 rounded-full object-cover"
+                  <Avatar 
+                    src={partner.profilePictureUrl} 
+                    alt={partner.username} 
+                    size="sm"
+                    userId={partner.id}
+                    showStatus={true}
                   />
                 ) : (
-                  <div className="w-9 h-9 rounded-full bg-purple flex items-center justify-center text-white text-sm font-bold">
-                    {partner.username.charAt(0).toUpperCase()}
-                  </div>
+                  <Avatar 
+                    src={undefined} 
+                    alt={partner.username} 
+                    size="sm"
+                    userId={partner.id}
+                    showStatus={true}
+                  />
                 )}
-
-                {/* Online indicator */}
-                <span
-                  className={`
-                    absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-charade
-                    ${partner.isOnline ? "bg-green" : "bg-gray-500"}
-                  `}
-                />
               </div>
 
               {/* Username */}
