@@ -72,15 +72,18 @@ Create a `.env` file in `backend/src/`:
 
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/yourdb"
+SUPABASE_URL="your_supabase_url"
+SUPABASE_ANON_KEY="your_supabase_anon_key"
+SUPABASE_SERVICE_KEY="your_supabase_service_key"
 DIRECT_URL="postgresql://user:password@localhost:5432/yourdb"
 JWT_SECRET="your_secure_random_string"
-PORT=4000
 ```
 
 Create a `.env.local` file in `frontend/`:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:4000/api
+NEXT_PUBLIC_SOCKET_URL=http://localhost:4000
 ```
 
 ### 3. Database Initialization
