@@ -2,6 +2,8 @@
 
 A full-stack real-time messaging platform with presence tracking, friend relationships, room-based chat, and JWT authentication. Built with Next.js, Node.js, Socket.IO, Prisma and Supabase.
 
+Currently building on X for #100DaysOfCode: [@dannykryan](https://x.com/dannykryan)
+
 ## 🚀 The Tech Stack
 
 | Layer | Technology |
