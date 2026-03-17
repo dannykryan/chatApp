@@ -6,6 +6,8 @@ import Button from "../Button";
 import { FaCamera } from "react-icons/fa";
 import { User } from "../../types/user";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 type EditProfileFormProps = {
   initialValues: {
     username: string;
@@ -56,7 +58,7 @@ export default function EditProfileForm({
     formData.append("avatar", file);
 
     const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:4000/api/user/me/avatar", {
+    const res = await fetch(`${API_URL}/user/me/avatar`, {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       // Don't set Content-Type here — the browser sets it automatically with the boundary for multipart
@@ -80,7 +82,7 @@ export default function EditProfileForm({
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:4000/api/user/me", {
+      const res = await fetch(`${API_URL}/user/me`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

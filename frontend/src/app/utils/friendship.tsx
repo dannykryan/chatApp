@@ -1,3 +1,5 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 interface FriendStatusResponse {
   status: "FRIENDS" | "PENDING" | "NONE";
   isSender: boolean | null;     // null = no active request exists
@@ -26,7 +28,7 @@ const checkFriendStatus = async (
     throw new Error("No authentication token found");
   }
 
-  const res = await fetch(`http://localhost:4000/api/friends/status/${friendUsername}`, {
+  const res = await fetch(`${API_URL}/friends/status/${friendUsername}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -46,7 +48,7 @@ const checkFriendStatus = async (
 
 const handleAddFriend = async (friendUsername: string): Promise<void> => {
   const token = localStorage.getItem("token");
-  const res = await fetch("http://localhost:4000/api/friends/add", {
+  const res = await fetch(`${API_URL}/friends/add`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -64,7 +66,7 @@ const handleFriendResponse = async (
   friendRequestResponse: boolean,
 ): Promise<void> => {
   const token = localStorage.getItem("token");
-  const res = await fetch("http://localhost:4000/api/friends/respond", {
+  const res = await fetch(`${API_URL}/friends/respond`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -79,7 +81,7 @@ const handleFriendResponse = async (
 
 const handleRemoveFriend = async (username: string): Promise<void> => {
   const token = localStorage.getItem("token");
-  const res = await fetch("http://localhost:4000/api/friends/remove", {
+  const res = await fetch(`${API_URL}/friends/remove`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

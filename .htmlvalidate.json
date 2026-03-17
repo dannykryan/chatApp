@@ -1,6 +1,0 @@
-{
-  "rules": {
-    "doctype-style": ["error", { "style": "lowercase" }],
-    "tag-self-close": "off"
-  }
-}

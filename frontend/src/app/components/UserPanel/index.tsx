@@ -47,7 +47,7 @@ export default function UserPanel() {
 
         <button
           onClick={handleLogout}
-          className="text-gray-100 hover:text-purple transition-colors flex-shrink-0"
+          className="text-gray-100 hover:text-purple transition-colors shrink-0"
           title="Log out"
         >
           <TbLogout size={32} />

@@ -8,6 +8,8 @@ import { AuthContext } from "../../components/AuthProvider";
 import ProfileSkeleton from "../../components/ProfileSkeleton";
 import Avatar from "../../components/Avatar";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function UserProfile({
   params,
 }: {
@@ -26,7 +28,7 @@ export default function UserProfile({
 
   useEffect(() => {
     if (!username) return;
-    fetch(`http://localhost:4000/api/user/${username}`)
+    fetch(`${API_URL}/user/${username}`)
       .then((res) => res.json())
       .then((data) => {
         console.log("Fetched user data:", data);

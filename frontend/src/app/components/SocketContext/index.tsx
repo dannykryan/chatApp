@@ -3,6 +3,8 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 import { AuthContext } from "../AuthProvider";
 
+const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
+
 type SocketContextType = {
   socket: Socket | null;
 };
@@ -19,7 +21,7 @@ export default function SocketProvider({
 
   useEffect(() => {
     if (token) {
-      const newSocket = io("http://localhost:4000", { auth: { token } });
+      const newSocket = io(SOCKET_URL, { auth: { token } });
       setSocket(newSocket);
 
       newSocket.on("connect", () => console.log("connected"));

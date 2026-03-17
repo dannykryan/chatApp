@@ -5,6 +5,8 @@ import { FaEnvelope } from "react-icons/fa";
 import RoomAvatar from "../RoomAvatar";
 import { Room, RoomSidebarProps } from "../../types/dashboard";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default function RoomSidebar({
   selectedRoomId,
   onSelectRoom,
@@ -17,7 +19,7 @@ export default function RoomSidebar({
 
   useEffect(() => {
     if (!token) return;
-    fetch("http://localhost:4000/api/rooms", {
+    fetch(`${API_URL}/rooms`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())

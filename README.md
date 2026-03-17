@@ -1,94 +1,121 @@
 # chatApp | Real-Time Messaging Engine
+
 A full-stack communication platform built to explore event-driven architecture and relational data modeling. This project was developed as part of a #100DaysOfCode sprint to bridge the gap between rapid agency delivery and deep-dive technical architecture.
 
 ## 🚀 The Tech Stack
-Frontend: Next.js 14 (App Router), React, Tailwind CSS
 
-Backend: Node.js, Express, TypeScript
-
-Real-Time: Socket.IO (WebSockets)
-
-Database: PostgreSQL (Hosted on Supabase)
-
-ORM: Prisma
-
-Testing: Vitest (Backend API logic)
-
-Auth: JWT (JSON Web Tokens)
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 15 (App Router), React, Tailwind CSS v4 |
+| Backend | Node.js, Express, TypeScript |
+| Real-Time | Socket.IO (WebSockets) |
+| Database | PostgreSQL (Hosted on Supabase) |
+| ORM | Prisma |
+| Storage | Supabase Storage (avatars & room images) |
+| Testing | Vitest (Backend API logic) |
+| Auth | JWT (JSON Web Tokens), bcrypt |
 
 ## 🛠 Features
-Real-Time Bi-directional Communication: Low-latency messaging powered by Socket.IO.
 
-Presence Tracking: Real-time online/offline status updates using socket events.
+**Real-Time Communication**
+- Low-latency bi-directional messaging powered by Socket.IO
+- Live presence tracking — online/offline status updates across all connected clients
 
-Relational Data Persistence: Robust PostgreSQL schema managed via Prisma for user profiles, chat history, and relationships.
+**Rooms & Messaging**
+- Public boards visible to all users
+- Private group rooms with membership control
+- Direct messaging between users
 
-Secure Authentication: Protected API routes and socket handshakes using JWT.
+**Dashboard**
+- Discord-inspired four-column layout
+- Room sidebar with avatars, tooltips and active state
+- Room panel showing members, roles and online status
+- DM list with presence indicators
+- User panel with account controls
 
-Responsive Architecture: Mobile-first UI built with Tailwind CSS and Next.js.
+**Users & Relationships**
+- JWT-secured authentication
+- Passwords hashed with bcrypt before storage — no plaintext credentials in the database
+- Friend requests — send, accept and decline
+- User profiles with avatars (fallback to initial monogram)
+- Role-based room membership (member / admin)
 
-## 📂 Project Structure
-backend/: Express entry point, Prisma schema, API routes, middleware, and Vitest suite.
+**Data & Storage**
+- Robust PostgreSQL schema managed via Prisma
+- Supabase Storage for images and attachments
+- Fully seeded development database with realistic X-Men themed data
 
-frontend/: Next.js App Router, modular React components, and TypeScript interfaces.
-
-README.md: Project documentation.
+```
 
 ## 🚦 Getting Started
-Prerequisites
-Node.js (v18+)
 
-PostgreSQL instance
+### Prerequisites
+- Node.js (v18+)
+- PostgreSQL instance or Supabase project
 
-1. Clone & Install
+### 1. Clone & Install
 
-Bash
+```bash
 git clone https://github.com/dannykryan/chatApp.git
 cd chatApp
 
-# Install Backend
-
+# Install backend
 cd backend/src && npm install
 
-# Install Frontend
-
+# Install frontend
 cd ../../frontend && npm install
+```
 
-2. Environment Configuration
-Create a .env file in backend/src/:
+### 2. Environment Configuration
 
-Code snippet
+Create a `.env` file in `backend/src/`:
 
+```env
 DATABASE_URL="postgresql://user:password@localhost:5432/yourdb"
-
+DIRECT_URL="postgresql://user:password@localhost:5432/yourdb"
 JWT_SECRET="your_secure_random_string"
-
 PORT=4000
+```
 
-3. Database Initialization
+Create a `.env.local` file in `frontend/`:
 
-Bash
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
+```
+
+### 3. Database Initialization
+
+```bash
+cd backend/src
 npx prisma migrate dev --name init
+npx prisma db seed
+```
 
-4. Run the Application
+### 4. Run the Application
 
-Backend: npm start (Runs on port 4000)
+```bash
+# Backend (port 4000)
+cd backend/src && npm start
 
-Frontend: npm run dev (Runs on port 3000)
+# Frontend (port 3000)
+cd frontend && npm run dev
+```
+
+## 🧪 Testing
+
+Backend logic is validated using Vitest:
+
+```bash
+cd backend/src
+npm run test
+```
 
 ## 📈 Future Roadmap
 
-[ ] Message Persistence: Implement "Load More" pagination for historical chat data.
-
-[ ] Media Support: Integration with Supabase image buckets for image sharing.
-
-[ ] Ability to share more types of media securely.
-
-[ ] Mobile front-end built with React Native.
-
-## 🧪 Testing
-Backend logic is validated using Vitest:
-
-Bash
-cd backend/src
-npm run test
+- [ ] Message input with send functionality
+- [ ] Load more / pagination for message history
+- [ ] Media sharing via Supabase Storage
+- [ ] Message reactions and replies
+- [ ] Room creation and management UI
+- [ ] Friend request notifications
+- [ ] Mobile front-end built with React Native

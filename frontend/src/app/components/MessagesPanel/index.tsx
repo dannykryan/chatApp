@@ -28,13 +28,15 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     if (!room || !token) return;
 
     setLoading(true);
     setMessages([]);
 
-    fetch(`http://localhost:4000/api/rooms/${room.id}/messages`, {
+    fetch(`${API_URL}/rooms/${room.id}/messages`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
@@ -110,7 +112,7 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
             className="w-8 h-8 rounded-full object-cover"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-purple flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+          <div className="w-8 h-8 rounded-full bg-purple flex items-center justify-center text-white text-sm font-bold shrink-0">
             {room.name?.charAt(0).toUpperCase() ?? "?"}
           </div>
         )}
@@ -153,7 +155,7 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
               className={`flex items-end pb-2 gap-2 ${isOwn ? "flex-row-reverse" : "flex-row"}`}
             >
               {/* Avatar */}
-              <div className="flex-shrink-0 mb-1">
+              <div className="shrink-0 mb-1">
                 <Avatar
                   src={message.sender.profilePictureUrl ?? undefined}
                   alt={message.sender.username}
@@ -178,7 +180,7 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
                 {/* Message bubble */}
                 <div
                   className={`
-                    px-3 py-2 rounded-2xl text-sm text-gray-100 leading-relaxed break-words
+                    px-3 py-2 rounded-2xl text-sm text-gray-100 leading-relaxed wrap-break-word
                     ${isOwn
                       ? "bg-purple rounded-tr-sm"
                       : "bg-charade rounded-tl-sm"

@@ -2,6 +2,8 @@
 import React, { createContext, useState, useEffect } from "react";
 import { User } from "../../types/user";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export const AuthContext = createContext({
   user: null as User | null,
   token: "",
@@ -25,7 +27,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     setToken(storedToken);
 
-    fetch("http://localhost:4000/api/user/me", {
+    fetch(`${API_URL}/user/me`, {
       headers: { Authorization: `Bearer ${storedToken}` },
     })
       .then(async (res) => {

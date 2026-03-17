@@ -11,6 +11,8 @@ const Register: React.FC = () => {
   const { token } = useContext(AuthContext);
   const router = useRouter();
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     if (token) {
       router.replace("/chat");
@@ -22,7 +24,7 @@ const Register: React.FC = () => {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:4000/api/auth/register", {
+      const res = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, username, password }),
