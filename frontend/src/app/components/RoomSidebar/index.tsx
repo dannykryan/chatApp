@@ -4,6 +4,7 @@ import { AuthContext } from "../AuthProvider";
 import { FaEnvelope } from "react-icons/fa";
 import RoomAvatar from "../RoomAvatar";
 import { Room, RoomSidebarProps } from "../../types/dashboard";
+import ButtonRound from "../ButtonRound";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -31,30 +32,18 @@ export default function RoomSidebar({
   }, [token]);
 
   const groupRooms = rooms.filter((r) => r.type !== "DIRECT_MESSAGE");
-  const dmRooms = rooms.filter((r) => r.type === "DIRECT_MESSAGE");
-
-  // For DMs, show the other user's avatar instead of a room image
-  const getDmPartner = (room: Room) => {
-    return room.members.find((m) => m.userId !== user?.id)?.user ?? null;
-  };
 
   return (
     <div className="flex flex-col items-center gap-3 py-4 px-2 h-full bg-woodsmoke overflow-y-auto">
 
       {/* DM Button */}
-      <button
+      <ButtonRound
         onClick={onSelectDMs}
+        isSelected={showingDMs}
         title="Direct Messages"
-        className={`
-          w-10 h-10 rounded-full flex items-center justify-center transition-all
-          ${showingDMs
-            ? "bg-purple text-white ring-2 ring-purple ring-offset-2 ring-offset-woodsmoke"
-            : "bg-charade text-gray-400 hover:text-white hover:bg-purple"
-          }
-        `}
       >
-        <FaEnvelope size={16} />
-      </button>
+        <FaEnvelope size={24} />
+      </ButtonRound>
 
       {/* Divider */}
       <div className="w-6 h-px bg-gray-600" />
@@ -67,6 +56,8 @@ export default function RoomSidebar({
           imageUrl={room.imageUrl}
           isSelected={selectedRoomId === room.id}
           onClick={() => onSelectRoom(room)}
+          size="lg"
+          type="button"
         />
       ))}
     </div>

@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { AuthContext } from "../AuthProvider";
 import Avatar from "../Avatar";
+import RoomAvatar from "../RoomAvatar";
 import type { Room } from "../../types/dashboard";
 import { FaPaperPlane } from "react-icons/fa";
 
@@ -31,6 +32,11 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const isDM = room?.type === "DIRECT_MESSAGE";
+  const otherMember = isDM
+    ? room?.members.find((m) => m.userId !== user?.id)?.user ?? null
+    : null;
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -159,19 +165,23 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
     <div className="flex flex-col h-full overflow-hidden">
       {/* Room header */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-charade shrink-0">
-        {room.imageUrl ? (
-          <img
-            src={room.imageUrl}
-            alt={room.name ?? "Room"}
-            className="w-8 h-8 rounded-full object-cover"
+        {!isDM ? (
+          <RoomAvatar
+            imageUrl={room.imageUrl}
+            label={room.name ?? "Room"}
+            size="md"
+            type="avatar"
           />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-purple flex items-center justify-center text-white text-sm font-bold shrink-0">
-            {room.name?.charAt(0).toUpperCase() ?? "?"}
-          </div>
+          <Avatar
+            size="lg"
+            userId={otherMember?.id ?? undefined}
+            src={otherMember?.profilePictureUrl ?? undefined}
+            alt={`${otherMember?.username ?? "Room"}`}
+          />
         )}
         <div>
-          <h2 className="text-white font-semibold text-sm">{room.name}</h2>
+          <h2 className="text-white font-semibold text-sm">{isDM ? otherMember?.username : room.name}</h2>
           {room.description && (
             <p className="text-gray-500 text-xs truncate">{room.description}</p>
           )}

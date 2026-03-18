@@ -2,6 +2,7 @@
 import { useContext } from "react";
 import { AuthContext } from "../AuthProvider";
 import Avatar from "../Avatar";
+import RoomAvatar from "../RoomAvatar";
 import { FaCrown, FaLock, FaGlobe } from "react-icons/fa";
 import { Room, RoomMember } from "../../types/dashboard";
 
@@ -30,10 +31,11 @@ export default function RoomPanel({ room }: RoomPanelProps) {
       {/* Room Header */}
       <div className="flex flex-col items-center gap-3 p-4 border-b border-woodsmoke">
         {room.imageUrl ? (
-          <img
-            src={room.imageUrl}
-            alt={room.name ?? "Room"}
-            className="w-16 h-16 rounded-full object-cover"
+          <RoomAvatar
+            imageUrl={room.imageUrl}
+            label={room.name ?? "Room"}
+            size="2xl"
+            type="avatar"
           />
         ) : (
           <div className="w-16 h-16 rounded-full bg-purple flex items-center justify-center text-white text-xl font-bold">

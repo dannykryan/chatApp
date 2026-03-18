@@ -15,7 +15,11 @@ type ConfirmContextType = (options: ConfirmOptions) => Promise<boolean>;
 
 export const ConfirmContext = createContext<ConfirmContextType>(null!);
 
-export const ConfirmProvider = ({ children }: { children: React.ReactNode }) => {
+export const ConfirmProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [options, setOptions] = useState<ConfirmOptions | null>(null);
   const resolverRef = useRef<(value: boolean) => void>(null!);
 
@@ -45,7 +49,9 @@ export const ConfirmProvider = ({ children }: { children: React.ReactNode }) => 
           >
             {/* Header */}
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-white">{options.title}</h2>
+              <h2 className="text-lg font-semibold text-white">
+                {options.title}
+              </h2>
               <button
                 onClick={() => handleClose(false)}
                 className="text-gray-400 hover:text-white transition-colors"
@@ -59,7 +65,10 @@ export const ConfirmProvider = ({ children }: { children: React.ReactNode }) => 
 
             {/* Actions */}
             <div className="flex justify-end gap-3 mt-2">
-              <Button btnStyle="primaryOutline" onClick={() => handleClose(false)}>
+              <Button
+                btnStyle="primaryOutline"
+                onClick={() => handleClose(false)}
+              >
                 Cancel
               </Button>
               <Button

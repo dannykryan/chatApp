@@ -1,33 +1,48 @@
 import { useState } from "react";
 
+const sizeClasses = {
+  sm: "w-6 h-6",
+  md: "w-8 h-8",
+  lg: "w-12 h-12",
+  xl: "w-16 h-16",
+  "2xl": "w-24 h-24",
+  "3xl": "w-32 h-32",
+} as const;
+
+type AvatarSize = keyof typeof sizeClasses;
+
 interface RoomAvatarProps {
   label: string;
   imageUrl: string | null;
-  isSelected: boolean;
-  onClick: () => void;
+  isSelected?: boolean;
+  onClick?: () => void;
+  size?: AvatarSize;
+  type: "button" | "avatar";
 }
 
-function RoomAvatar({ label, imageUrl, isSelected, onClick }: RoomAvatarProps) {
+function RoomAvatar({ label, imageUrl, isSelected, onClick, size = "md", type = "avatar" }: RoomAvatarProps) {
   const [showTooltip, setShowTooltip] = useState(false);
+
+  const isButton = type === "button";
 
   return (
     <div className="relative flex items-center">
       <button
-        onClick={onClick}
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
+        onClick={isButton ? onClick : undefined}
+        onMouseEnter={isButton ? () => setShowTooltip(true) : undefined}
+        onMouseLeave={isButton ? () => setShowTooltip(false) : undefined}
         className={`
-          w-10 h-10 rounded-full overflow-hidden shrink-0 transition-all
-          ${isSelected
+          ${sizeClasses[size]} rounded-full overflow-hidden shrink-0 transition-all
+          ${isButton && (isSelected
             ? "ring-2 ring-purple ring-offset-2 ring-offset-woodsmoke"
             : "hover:ring-2 hover:ring-gray-500 hover:ring-offset-2 hover:ring-offset-woodsmoke"
-          }
+          )}
         `}
       >
         {imageUrl ? (
           <img src={imageUrl} alt={label} className="w-full h-full object-cover" />
         ) : (
-          <div className="w-full h-full bg-charade flex items-center justify-center text-white text-xs font-bold">
+          <div className={`w-full h-full bg-charade flex items-center justify-center text-white text-xs font-bold ${sizeClasses[size]}`}>
             {label.charAt(0).toUpperCase()}
           </div>
         )}

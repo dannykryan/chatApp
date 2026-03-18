@@ -28,7 +28,7 @@ export default function EditProfileForm({
   const [email, setEmail] = useState(initialValues.email);
   const [bio, setBio] = useState(initialValues.bio ?? "");
   const [profilePictureUrl, setProfilePictureUrl] = useState(
-    initialValues.profilePictureUrl ?? ""
+    initialValues.profilePictureUrl ?? "",
   );
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -38,43 +38,43 @@ export default function EditProfileForm({
   const handleImageClick = () => fileInputRef.current?.click();
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  if (!file.type.startsWith("image/")) {
-    setImageError("Please select an image file");
-    return;
-  }
-  if (file.size > 2 * 1024 * 1024) {
-    setImageError("Image must be under 2MB");
-    return;
-  }
+    if (!file.type.startsWith("image/")) {
+      setImageError("Please select an image file");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setImageError("Image must be under 2MB");
+      return;
+    }
 
-  setImageError(null);
-  setUploadingImage(true);
+    setImageError(null);
+    setUploadingImage(true);
 
-  try {
-    const formData = new FormData();
-    formData.append("avatar", file);
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
 
-    const token = localStorage.getItem("token");
-    const res = await fetch(`${API_URL}/user/me/avatar`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      // Don't set Content-Type here — the browser sets it automatically with the boundary for multipart
-      body: formData,
-    });
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/user/me/avatar`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        // Don't set Content-Type here — the browser sets it automatically with the boundary for multipart
+        body: formData,
+      });
 
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || "Upload failed");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Upload failed");
 
-    setProfilePictureUrl(data.profilePictureUrl);
-  } catch (err) {
-    setImageError(err instanceof Error ? err.message : "Upload failed");
-  } finally {
-    setUploadingImage(false);
-  }
-};
+      setProfilePictureUrl(data.profilePictureUrl);
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,7 +104,6 @@ export default function EditProfileForm({
 
   return (
     <form onSubmit={onSubmit} className="space-y-5">
-      
       {/* Avatar upload */}
       <div className="flex flex-col items-center gap-2">
         <div
@@ -129,9 +128,7 @@ export default function EditProfileForm({
         <p className="text-xs text-gray-400">
           {uploadingImage ? "Uploading..." : "Click to change photo"}
         </p>
-        {imageError && (
-          <p className="text-xs text-red-500">{imageError}</p>
-        )}
+        {imageError && <p className="text-xs text-red-500">{imageError}</p>}
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -178,10 +175,7 @@ export default function EditProfileForm({
         <Button btnStyle="redOutline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button
-          btnStyle="greenOutline"
-          disabled={saving || uploadingImage}
-        >
+        <Button btnStyle="greenOutline" disabled={saving || uploadingImage}>
           {saving ? "Saving..." : "Save"}
         </Button>
       </div>
