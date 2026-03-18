@@ -32,6 +32,10 @@ export default function RoomSidebar({
 
   const groupRooms = rooms.filter((r) => r.type !== "DIRECT_MESSAGE");
 
+  const DMUnreadCount = rooms
+    .filter((r) => r.type === "DIRECT_MESSAGE")
+    .reduce((sum, r) => sum + (r.unreadCount ?? 0), 0);
+
   return (
     <div className="flex flex-col items-center gap-3 py-4 px-2 h-full bg-woodsmoke overflow-y-auto">
 
@@ -40,6 +44,7 @@ export default function RoomSidebar({
         onClick={onSelectDMs}
         isSelected={showingDMs}
         title="Direct Messages"
+        unread={DMUnreadCount}
       >
         <FaEnvelope size={24} />
       </ButtonRound>

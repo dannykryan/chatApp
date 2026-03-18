@@ -58,13 +58,9 @@ function RoomAvatar({ label, imageUrl, isSelected, onClick, size = "md", type = 
         </div>
       )}
 
-      {unread && unread > 0 && (
-        <span
-          className="absolute flex items-center justify-center rounded-full bg-purple left-8 -top-1 min-w-[18px] h-[18px] px-1 text-white text-[12px] font-bold"
-        >
-          <span className="absolute -top-px">
-            {unread > 99 ? "99+" : unread}
-          </span>
+      {!!unread && unread > 0 && (
+        <span className="absolute flex items-center justify-center rounded-full bg-purple -top-1 -right-1 min-w-[18px] h-[18px] px-1 text-white text-[10px] font-bold border-2 border-woodsmoke">
+          {unread > 99 ? "99+" : unread}
         </span>
       )}
     </div>

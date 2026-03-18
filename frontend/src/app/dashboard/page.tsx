@@ -56,6 +56,9 @@ export default function Dashboard() {
 
   const handleSelectDM = (room: Room ) => {
     setSelectedRoom(room);
+    setRooms((prev) =>
+      prev.map((r) => (r.id === room.id ? { ...r, unreadCount: 0 } : r))
+    );
   }
 
   const handleSelectDMs = () => {
