@@ -4,7 +4,8 @@ A full-stack real-time messaging platform with presence tracking, friend relatio
 
 Currently building on X for #100DaysOfCode: [@dannykryan](https://x.com/dannykryan)
 
-<img width="1910" height="908" alt="image" src="https://github.com/user-attachments/assets/b0d685df-69af-4afa-b3bc-f591d7fd8bab" />
+<img width="1916" height="905" alt="image" src="https://github.com/user-attachments/assets/235120cd-b121-4a9d-8532-67953bac1497" />
+
 
 ## 🚀 The Tech Stack
 
@@ -25,6 +26,8 @@ Currently building on X for #100DaysOfCode: [@dannykryan](https://x.com/dannykry
 
 - Low-latency bi-directional messaging powered by Socket.IO
 - Live presence tracking — online/offline status updates across all connected clients
+- Live message updates and unread message counters for each room
+- Get instant alerts with notification sounds
 
 **Rooms & Messaging**
 
