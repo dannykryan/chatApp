@@ -49,8 +49,6 @@ Currently building on X for #100DaysOfCode: [@dannykryan](https://x.com/dannykry
 - Supabase Storage for images and attachments
 - Fully seeded development database with realistic X-Men themed data
 
-```
-
 ## 🚦 Getting Started
 
 ### Prerequisites
