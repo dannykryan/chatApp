@@ -106,6 +106,10 @@ cd backend/src && npm start
 cd frontend && npm run dev
 ```
 
+### 5. Log in as Cyclops
+
+Log in with the username 'cyclops' and the password 'password123' to browse Cylops' saved chat rooms and direct messages and talk to the other X-Men!
+
 ## 🧪 Testing
 
 Backend logic is validated using Vitest:
