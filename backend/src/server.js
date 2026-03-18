@@ -39,11 +39,21 @@ io.on("connection", async (socket) => {
     }
 
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log("Socket authenticated for userId:", decoded.userId);
-
     const userId = decoded.userId;
 
+    console.log("Socket authenticated for userId:", userId);
+
+    // Join personal room
     socket.join(`user:${userId}`);
+
+    // Join all the rooms the user is a member of
+    const memberships = await prisma.roomMember.findMany({
+      where: { userId },
+      select: { roomId: true },
+    });
+    for (const { roomId } of memberships) {
+      socket.join(`room:${roomId}`);
+    }
 
     await prisma.user.update({
       where: { id: userId },

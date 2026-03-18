@@ -5,6 +5,7 @@ import Avatar from "../Avatar";
 import RoomAvatar from "../RoomAvatar";
 import type { Room } from "../../types/dashboard";
 import { FaPaperPlane } from "react-icons/fa";
+import { SocketContext } from "../SocketContext";
 
 interface Message {
   id: string;
@@ -29,6 +30,7 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const { token, user } = useContext(AuthContext);
+  const { socket } = useContext(SocketContext);
   const bottomRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -51,7 +53,7 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
     })
       .then((res) => res.json())
       .then((data) => {
-        setMessages(data);
+        setMessages(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
@@ -64,6 +66,21 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Listen for new messages via WebSocket
+  useEffect(() => {
+    if (!socket || !room) return;
+
+    const handleNewMessage = (message: Message) => {
+      setMessages((prev) => [...prev, message]);
+    };
+
+    socket.on("message:new", handleNewMessage);
+
+    return () => {
+      socket.off("message:new", handleNewMessage);
+    };
+  }, [socket, room?.id]);
 
   const handleSend = async () => {
     if (!input.trim() || !room || !token || sending) return;
@@ -81,8 +98,6 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
 
       if (!res.ok) throw new Error("Failed to send message");
 
-      const newMessage = await res.json();
-      setMessages((prev) => [...prev, newMessage]);
       setInput("");
       inputRef.current?.focus();
     } catch (err) {

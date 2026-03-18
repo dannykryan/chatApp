@@ -698,7 +698,7 @@ router.post("/rooms/:roomId/messages", verifyToken, async (req, res) => {
 
     // Emit the new message to all users in the room via Socket.IO
     const io = req.app.get("io");
-    io.to(`room:${roomId}`).emit("newMessage", message);
+    io.to(`room:${roomId}`).emit("message:new", message);
 
     res.status(201).json(message);
   } catch (error) {

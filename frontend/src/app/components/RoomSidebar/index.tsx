@@ -14,8 +14,8 @@ export default function RoomSidebar({
   onSelectDMs,
   onRoomsLoaded,
   showingDMs,
+  rooms,
 }: RoomSidebarProps) {
-  const [rooms, setRooms] = useState<Room[]>([]);
   const { token, user } = useContext(AuthContext);
 
   useEffect(() => {
@@ -25,7 +25,6 @@ export default function RoomSidebar({
     })
       .then((res) => res.json())
       .then((data) => {
-        setRooms(data);
         onRoomsLoaded(data);
       })
       .catch(console.error);

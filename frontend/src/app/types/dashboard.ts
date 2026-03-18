@@ -26,4 +26,5 @@ export interface RoomSidebarProps {
   onSelectDMs: () => void;
   onRoomsLoaded: (rooms: Room[]) => void;
   showingDMs: boolean;
+  rooms: Room[];
 }
