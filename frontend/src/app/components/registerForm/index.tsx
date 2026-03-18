@@ -15,7 +15,7 @@ const Register: React.FC = () => {
 
   useEffect(() => {
     if (token) {
-      router.replace("/chat");
+      router.replace("/dashboard");
     }
   }, [token, router]);
 

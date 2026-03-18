@@ -10,7 +10,7 @@ export default function HomeRedirect() {
 
   useEffect(() => {
     if (token) {
-      router.replace("/chat");
+      router.replace("/dashboard");
     }
   }, [token, router]);
 

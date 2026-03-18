@@ -5,7 +5,6 @@ import AuthProvider from "./components/AuthProvider";
 import SocketProvider from "./components/SocketContext";
 import ConfirmProvider from "./components/ConfirmProvider";
 import { PresenceProvider } from "./components/PresenceProvider";
-import Navbar from "./components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

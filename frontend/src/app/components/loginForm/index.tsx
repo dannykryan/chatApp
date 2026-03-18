@@ -15,7 +15,7 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (token) {
-      router.replace("/chat");
+      router.replace("/dashboard");
     }
   }, [token, router]);
 
@@ -41,7 +41,7 @@ const Login: React.FC = () => {
           profilePictureUrl: data.profilePictureUrl,
           createdAt: data.createdAt,
         });
-        router.push("/chat");
+        router.push("/dashboard");
       } else {
         setError(data.error || "Login failed");
       }
