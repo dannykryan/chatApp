@@ -4,31 +4,36 @@ A full-stack real-time messaging platform with presence tracking, friend relatio
 
 Currently building on X for #100DaysOfCode: [@dannykryan](https://x.com/dannykryan)
 
+<img width="1910" height="908" alt="image" src="https://github.com/user-attachments/assets/b0d685df-69af-4afa-b3bc-f591d7fd8bab" />
+
 ## 🚀 The Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 15 (App Router), React, Tailwind CSS v4 |
-| Backend | Node.js, Express, TypeScript |
-| Real-Time | Socket.IO (WebSockets) |
-| Database | PostgreSQL (Hosted on Supabase) |
-| ORM | Prisma |
-| Storage | Supabase Storage (avatars & room images) |
-| Testing | Vitest (Backend API logic) |
-| Auth | JWT (JSON Web Tokens), bcrypt |
+| Layer     | Technology                                      |
+| --------- | ----------------------------------------------- |
+| Frontend  | Next.js 15 (App Router), React, Tailwind CSS v4 |
+| Backend   | Node.js, Express, TypeScript                    |
+| Real-Time | Socket.IO (WebSockets)                          |
+| Database  | PostgreSQL (Hosted on Supabase)                 |
+| ORM       | Prisma                                          |
+| Storage   | Supabase Storage (avatars & room images)        |
+| Testing   | Vitest (Backend API logic)                      |
+| Auth      | JWT (JSON Web Tokens), bcrypt                   |
 
 ## 🛠 Features
 
 **Real-Time Communication**
+
 - Low-latency bi-directional messaging powered by Socket.IO
 - Live presence tracking — online/offline status updates across all connected clients
 
 **Rooms & Messaging**
+
 - Public boards visible to all users
 - Private group rooms with membership control
 - Direct messaging between users
 
 **Dashboard**
+
 - Discord-inspired four-column layout
 - Room sidebar with avatars, tooltips and active state
 - Room panel showing members, roles and online status
@@ -36,6 +41,7 @@ Currently building on X for #100DaysOfCode: [@dannykryan](https://x.com/dannykry
 - User panel with account controls
 
 **Users & Relationships**
+
 - JWT-secured authentication
 - Passwords hashed with bcrypt before storage — no plaintext credentials in the database
 - Friend requests — send, accept and decline
@@ -43,15 +49,15 @@ Currently building on X for #100DaysOfCode: [@dannykryan](https://x.com/dannykry
 - Role-based room membership (member / admin)
 
 **Data & Storage**
+
 - Robust PostgreSQL schema managed via Prisma
 - Supabase Storage for images and attachments
 - Fully seeded development database with realistic X-Men themed data
 
-```
-
 ## 🚦 Getting Started
 
 ### Prerequisites
+
 - Node.js (v18+)
 - PostgreSQL instance or Supabase project
 
@@ -107,6 +113,7 @@ cd frontend && npm run dev
 ```
 
 ### 5. Log in as Cyclops
+
 Log in with the username 'cyclops' and the password 'password123' to browse Cylops' saved chat rooms and direct messages and talk to the other X-Men!
 
 ## 🧪 Testing
