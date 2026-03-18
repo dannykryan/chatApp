@@ -4,6 +4,8 @@ A full-stack real-time messaging platform with presence tracking, friend relatio
 
 Currently building on X for #100DaysOfCode: [@dannykryan](https://x.com/dannykryan)
 
+<img width="1910" height="908" alt="image" src="https://github.com/user-attachments/assets/b0d685df-69af-4afa-b3bc-f591d7fd8bab" />
+
 ## 🚀 The Tech Stack
 
 | Layer | Technology |
