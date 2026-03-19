@@ -27,7 +27,6 @@ export default function RoomPanel({ room }: RoomPanelProps) {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-
       {/* Room Header */}
       <div className="flex flex-col items-center gap-3 p-4 border-b border-woodsmoke">
         {room.imageUrl ? (
@@ -46,25 +45,32 @@ export default function RoomPanel({ room }: RoomPanelProps) {
         <div className="text-center">
           <h2 className="text-white font-semibold text-sm">{room.name}</h2>
           {room.description && (
-            <p className="text-gray-400 text-xs mt-1 leading-relaxed">{room.description}</p>
+            <p className="text-gray-400 text-xs mt-1 leading-relaxed">
+              {room.description}
+            </p>
           )}
         </div>
 
         {/* Room meta */}
         <div className="flex items-center gap-2 text-xs text-gray-500">
           {room.isPublic ? (
-            <span className="flex items-center gap-1"><FaGlobe size={10} /> Public</span>
+            <span className="flex items-center gap-1">
+              <FaGlobe size={10} /> Public
+            </span>
           ) : (
-            <span className="flex items-center gap-1"><FaLock size={10} /> Private</span>
+            <span className="flex items-center gap-1">
+              <FaLock size={10} /> Private
+            </span>
           )}
           <span>·</span>
-          <span>{room.members.length} member{room.members.length !== 1 ? "s" : ""}</span>
+          <span>
+            {room.members.length} member{room.members.length !== 1 ? "s" : ""}
+          </span>
         </div>
       </div>
 
       {/* Member List */}
       <div className="flex flex-col overflow-y-auto flex-1 py-2">
-
         {adminMembers.length > 0 && (
           <>
             <p className="text-xs text-gray-500 uppercase tracking-wider px-4 py-2">

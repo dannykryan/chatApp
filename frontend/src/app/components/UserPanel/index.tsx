@@ -14,23 +14,22 @@ export default function UserPanel() {
   const confirm = useConfirm();
 
   const handleLogout = async () => {
-      const confirmed = await confirm({
-        title: "Confirm Logout",
-        message: "Are you sure you want to logout?",
-        confirmLabel: "Logout",
-        confirmStyle: "danger",
-      });
-  
-      if (confirmed) {
-        logoutUser(setUser, setToken, router);
-      }
-    };
+    const confirmed = await confirm({
+      title: "Confirm Logout",
+      message: "Are you sure you want to logout?",
+      confirmLabel: "Logout",
+      confirmStyle: "danger",
+    });
+
+    if (confirmed) {
+      logoutUser(setUser, setToken, router);
+    }
+  };
 
   if (!user) return null;
 
   return (
     <div className="flex flex-col h-full p-3">
-
       {/* User card */}
       <div className="flex items-center gap-3 bg-woodsmoke rounded-xl px-3 py-2">
         <Avatar
@@ -55,9 +54,7 @@ export default function UserPanel() {
       </div>
 
       {/* Rest of panel — placeholder for now */}
-      <div className="flex-1 mt-4">
-        {/* Future controls go here */}
-      </div>
+      <div className="flex-1 mt-4">{/* Future controls go here */}</div>
     </div>
   );
 }

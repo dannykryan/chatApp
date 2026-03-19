@@ -37,7 +37,7 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
 
   const isDM = room?.type === "DIRECT_MESSAGE";
   const otherMember = isDM
-    ? room?.members.find((m) => m.userId !== user?.id)?.user ?? null
+    ? (room?.members.find((m) => m.userId !== user?.id)?.user ?? null)
     : null;
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -196,7 +196,9 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
           />
         )}
         <div>
-          <h2 className="text-white font-semibold text-sm">{isDM ? otherMember?.username : room.name}</h2>
+          <h2 className="text-white font-semibold text-sm">
+            {isDM ? otherMember?.username : room.name}
+          </h2>
           {room.description && (
             <p className="text-gray-500 text-xs truncate">{room.description}</p>
           )}
@@ -291,7 +293,7 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
         <div ref={bottomRef} />
       </div>
 
-        {/* Message input */}
+      {/* Message input */}
       <div className="shrink-0 px-4 py-3 border-t border-charade">
         <div className="flex items-end gap-2 bg-charade rounded-xl px-3 py-2">
           <textarea
@@ -316,7 +318,6 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
           Enter to send · Shift+Enter for new line
         </p>
       </div>
-
     </div>
   );
 }

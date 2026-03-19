@@ -2,7 +2,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface FriendStatusResponse {
   status: "FRIENDS" | "PENDING" | "NONE";
-  isSender: boolean | null;     // null = no active request exists
+  isSender: boolean | null; // null = no active request exists
 }
 
 interface CheckFriendStatusResult {
@@ -12,7 +12,7 @@ interface CheckFriendStatusResult {
 
 /**
  * Checks the friendship status between current user and target username.
- * 
+ *
  * @throws {Error} if the request fails (network error, unauthorized, server error, invalid json, etc.)
  */
 const checkFriendStatus = async (
@@ -38,7 +38,9 @@ const checkFriendStatus = async (
     if (res.status === 404) {
       return { status: "NONE", isSender: null };
     }
-    throw new Error(data?.error || `Failed to check friend status (${res.status})`);
+    throw new Error(
+      data?.error || `Failed to check friend status (${res.status})`,
+    );
   }
 
   const status = data.status as CheckFriendStatusResult["status"];
@@ -76,7 +78,8 @@ const handleFriendResponse = async (
   });
 
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "Failed to respond to friend request.");
+  if (!res.ok)
+    throw new Error(data.error || "Failed to respond to friend request.");
 };
 
 const handleRemoveFriend = async (username: string): Promise<void> => {

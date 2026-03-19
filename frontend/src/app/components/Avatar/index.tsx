@@ -48,10 +48,10 @@ export default function Avatar({
       : "offline"
     : undefined;
 
-    const online = userId ? isUserOnline(userId) : undefined;
-    console.log(`Avatar ${alt}: userId=${userId}, online=${online}`);
+  const online = userId ? isUserOnline(userId) : undefined;
+  console.log(`Avatar ${alt}: userId=${userId}, online=${online}`);
 
-    const textClasses = {
+  const textClasses = {
     sm: "text-xs",
     md: "text-xs",
     lg: "text-sm",

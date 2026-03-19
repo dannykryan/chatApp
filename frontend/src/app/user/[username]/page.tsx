@@ -51,13 +51,23 @@ export default function UserProfile({
       />
       <h1 className="text-2xl font-bold mb-2">{displayUser.username}</h1>
       <p className="text-gray-600">{displayUser.bio}</p>
-      <p className="text-gray-600 mt-2">User Since: {new Date(displayUser.createdAt).toLocaleDateString()}</p>
-      <p className="text-gray-600 mt-2">Last online: {displayUser.lastOnline ? new Date(displayUser.lastOnline).toLocaleString() : "N/A"}</p>
+      <p className="text-gray-600 mt-2">
+        User Since: {new Date(displayUser.createdAt).toLocaleDateString()}
+      </p>
+      <p className="text-gray-600 mt-2">
+        Last online:{" "}
+        {displayUser.lastOnline
+          ? new Date(displayUser.lastOnline).toLocaleString()
+          : "N/A"}
+      </p>
       <div className="mt-4">
         {authUser?.username === displayUser.username ? (
           <OwnedProfileActions />
         ) : (
-          <UserProfileActions friendUsername={displayUser.username} friendId={displayUser.id} />
+          <UserProfileActions
+            friendUsername={displayUser.username}
+            friendId={displayUser.id}
+          />
         )}
       </div>
     </div>

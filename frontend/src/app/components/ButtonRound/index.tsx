@@ -1,12 +1,12 @@
 "use client";
 
-const ButtonRound = ({ 
-  onClick, 
+const ButtonRound = ({
+  onClick,
   children,
   isSelected = false,
   title,
   unread = 0,
-}: { 
+}: {
   onClick?: () => void;
   children: React.ReactNode;
   isSelected?: boolean;
@@ -20,9 +20,10 @@ const ButtonRound = ({
         title={title}
         className={`
           w-full h-full rounded-full flex items-center justify-center transition-all
-          ${isSelected
-            ? "bg-purple text-white ring-2 ring-purple ring-offset-2 ring-offset-woodsmoke"
-            : "bg-charade text-gray-400 hover:text-white hover:bg-purple"
+          ${
+            isSelected
+              ? "bg-purple text-white ring-2 ring-purple ring-offset-2 ring-offset-woodsmoke"
+              : "bg-charade text-gray-400 hover:text-white hover:bg-purple"
           }
         `}
       >

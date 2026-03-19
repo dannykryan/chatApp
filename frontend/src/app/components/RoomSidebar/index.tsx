@@ -38,7 +38,6 @@ export default function RoomSidebar({
 
   return (
     <div className="flex flex-col items-center gap-3 py-4 px-2 h-full bg-woodsmoke overflow-y-auto">
-
       {/* DM Button */}
       <ButtonRound
         onClick={onSelectDMs}

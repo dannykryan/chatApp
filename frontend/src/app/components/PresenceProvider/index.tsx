@@ -60,13 +60,16 @@ export function PresenceProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({
-      isUserOnline: (userId?: string) => (userId ? onlineIds.has(userId) : false),
+      isUserOnline: (userId?: string) =>
+        userId ? onlineIds.has(userId) : false,
     }),
-    [onlineIds]
+    [onlineIds],
   );
 
   return (
-    <PresenceContext.Provider value={value}>{children}</PresenceContext.Provider>
+    <PresenceContext.Provider value={value}>
+      {children}
+    </PresenceContext.Provider>
   );
 }
 

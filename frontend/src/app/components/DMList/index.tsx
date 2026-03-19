@@ -10,7 +10,11 @@ interface DMListProps {
   onSelectRoom: (room: Room) => void;
 }
 
-export default function DMList({ rooms, selectedRoomId, onSelectRoom }: DMListProps) {
+export default function DMList({
+  rooms,
+  selectedRoomId,
+  onSelectRoom,
+}: DMListProps) {
   const { user } = useContext(AuthContext);
 
   const getDmPartner = (room: Room) => {
@@ -20,7 +24,9 @@ export default function DMList({ rooms, selectedRoomId, onSelectRoom }: DMListPr
   if (rooms.length === 0) {
     return (
       <div className="flex flex-col h-full p-4">
-        <h2 className="text-white font-semibold text-sm mb-4">Direct Messages</h2>
+        <h2 className="text-white font-semibold text-sm mb-4">
+          Direct Messages
+        </h2>
         <p className="text-gray-500 text-sm">No direct messages yet.</p>
       </div>
     );
@@ -45,26 +51,27 @@ export default function DMList({ rooms, selectedRoomId, onSelectRoom }: DMListPr
               onClick={() => onSelectRoom(room)}
               className={`
                 flex items-center gap-3 px-4 py-3 text-left transition-colors w-full
-                ${isSelected
-                  ? "bg-woodsmoke text-white"
-                  : "text-gray-400 hover:bg-woodsmoke hover:text-white"
+                ${
+                  isSelected
+                    ? "bg-woodsmoke text-white"
+                    : "text-gray-400 hover:bg-woodsmoke hover:text-white"
                 }
               `}
             >
               {/* Avatar */}
               <div className="relative shrink-0">
                 {partner.profilePictureUrl ? (
-                  <Avatar 
-                    src={partner.profilePictureUrl} 
-                    alt={partner.username} 
+                  <Avatar
+                    src={partner.profilePictureUrl}
+                    alt={partner.username}
                     size="sm"
                     userId={partner.id}
                     showStatus={true}
                   />
                 ) : (
-                  <Avatar 
-                    src={undefined} 
-                    alt={partner.username} 
+                  <Avatar
+                    src={undefined}
+                    alt={partner.username}
                     size="sm"
                     userId={partner.id}
                     showStatus={true}
@@ -73,7 +80,9 @@ export default function DMList({ rooms, selectedRoomId, onSelectRoom }: DMListPr
               </div>
 
               {/* Username */}
-              <span className="text-sm font-medium truncate flex-1">{partner.username}</span>
+              <span className="text-sm font-medium truncate flex-1">
+                {partner.username}
+              </span>
 
               {/* Unread badge */}
               {room.unreadCount > 0 && (

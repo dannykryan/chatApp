@@ -21,7 +21,15 @@ interface RoomAvatarProps {
   unread?: number;
 }
 
-function RoomAvatar({ label, imageUrl, isSelected, onClick, size = "md", type = "avatar", unread }: RoomAvatarProps) {
+function RoomAvatar({
+  label,
+  imageUrl,
+  isSelected,
+  onClick,
+  size = "md",
+  type = "avatar",
+  unread,
+}: RoomAvatarProps) {
   const [showTooltip, setShowTooltip] = useState(false);
 
   console.log(`Unread: ${unread} for room ${label}`);
@@ -36,16 +44,24 @@ function RoomAvatar({ label, imageUrl, isSelected, onClick, size = "md", type = 
         onMouseLeave={isButton ? () => setShowTooltip(false) : undefined}
         className={`
           w-full h-full rounded-full overflow-hidden shrink-0 transition-all
-          ${isButton && (isSelected
-            ? "ring-2 ring-purple ring-offset-2 ring-offset-woodsmoke"
-            : "hover:ring-2 hover:ring-gray-500 hover:ring-offset-2 hover:ring-offset-woodsmoke"
-          )}
+          ${
+            isButton &&
+            (isSelected
+              ? "ring-2 ring-purple ring-offset-2 ring-offset-woodsmoke"
+              : "hover:ring-2 hover:ring-gray-500 hover:ring-offset-2 hover:ring-offset-woodsmoke")
+          }
         `}
       >
         {imageUrl ? (
-          <img src={imageUrl} alt={label} className="w-full h-full object-cover" />
+          <img
+            src={imageUrl}
+            alt={label}
+            className="w-full h-full object-cover"
+          />
         ) : (
-          <div className={`w-full h-full bg-charade flex items-center justify-center text-white text-xs font-bold ${sizeClasses[size]}`}>
+          <div
+            className={`w-full h-full bg-charade flex items-center justify-center text-white text-xs font-bold ${sizeClasses[size]}`}
+          >
             {label.charAt(0).toUpperCase()}
           </div>
         )}
