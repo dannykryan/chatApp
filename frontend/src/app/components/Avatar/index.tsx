@@ -1,13 +1,27 @@
 "use client";
 import { usePresence } from "../PresenceProvider";
 
+interface AvatarProps {
+  src?: string | null;
+  alt: string;
+  size?: AvatarSize;
+  showStatus?: boolean;
+  userId?: string;
+  onClick?: () => void;
+}
+
 const sizeClasses = {
-  sm: "w-6 h-6",
-  md: "w-8 h-8",
-  lg: "w-12 h-12",
-  xl: "w-16 h-16",
-  "2xl": "w-24 h-24",
-  "3xl": "w-32 h-32",
+  sm: "w-6 h-6 text-xs",
+  md: "w-8 h-8 text-xs",
+  lg: "w-12 h-12 text-sm",
+  xl: "w-16 h-16 text-base",
+  "2xl": "w-24 h-24 text-xl",
+  "3xl": "w-32 h-32 text-2xl",
+} as const;
+
+  const statusClasses = {
+  online: "bg-green-500",
+  offline: "bg-gray-500",
 } as const;
 
 const badgeClasses = {
@@ -19,11 +33,6 @@ const badgeClasses = {
   "3xl": "bottom-2 right-2 w-5 h-5 border-2",
 } as const;
 
-const statusClasses = {
-  online: "bg-green-500",
-  offline: "bg-gray-500",
-} as const;
-
 type AvatarSize = keyof typeof sizeClasses;
 type AvatarStatus = keyof typeof statusClasses;
 
@@ -33,13 +42,8 @@ export default function Avatar({
   size = "md",
   showStatus = false,
   userId,
-}: {
-  src?: string;
-  alt: string;
-  size?: AvatarSize;
-  showStatus?: boolean;
-  userId?: string;
-}) {
+  onClick,
+}: AvatarProps) {
   const { isUserOnline } = usePresence();
 
   const resolvedStatus: AvatarStatus | undefined = userId
@@ -48,42 +52,39 @@ export default function Avatar({
       : "offline"
     : undefined;
 
-  const online = userId ? isUserOnline(userId) : undefined;
-  console.log(`Avatar ${alt}: userId=${userId}, online=${online}`);
-
-  const textClasses = {
-    sm: "text-xs",
-    md: "text-xs",
-    lg: "text-sm",
-    xl: "text-base",
-    "2xl": "text-xl",
-    "3xl": "text-2xl",
-  } as const;
-
-  return (
-    <div className={`relative ${sizeClasses[size]}`}>
+    const content = (
+    <>
       {src ? (
-        <img
-          src={src}
-          alt={alt}
-          className={`rounded-full object-cover ${sizeClasses[size]}`}
-        />
+        <img src={src} alt={alt} className={`rounded-full object-cover ${sizeClasses[size]}`} />
       ) : (
-        <div
-          className={`rounded-full bg-purple flex items-center justify-center text-white font-semibold ${sizeClasses[size]} ${textClasses[size]}`}
-        >
+        <div className={`rounded-full bg-purple flex items-center justify-center text-white font-semibold ${sizeClasses[size]}`}>
           {alt.charAt(0).toUpperCase()}
         </div>
       )}
       {showStatus && resolvedStatus && (
-        <span
-          className={`absolute block rounded-full border-white ${badgeClasses[size]} ${statusClasses[resolvedStatus]} group/status`}
-        >
+        <span className={`absolute block rounded-full border-white ${badgeClasses[size]} ${statusClasses[resolvedStatus]} group/status`}>
           <span className="absolute left-1/2 bottom-full mb-2 -translate-x-1/2 px-2 py-1 text-xs bg-black text-white rounded opacity-0 group-hover/status:opacity-100 pointer-events-none whitespace-nowrap z-10">
             {resolvedStatus.charAt(0).toUpperCase() + resolvedStatus.slice(1)}
           </span>
         </span>
       )}
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className={`relative ${sizeClasses[size]} rounded-full cursor-pointer hover:opacity-80 transition-opacity`}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={`relative ${sizeClasses[size]}`}>
+      {content}
     </div>
   );
 }

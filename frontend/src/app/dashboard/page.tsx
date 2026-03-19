@@ -5,13 +5,16 @@ import DMList from "../components/DMList";
 import RoomPanel from "../components/RoomPanel";
 import { Room } from "../types/dashboard";
 import MessagesPanel from "../components/MessagesPanel";
-import UserPanel from "../components/UserPanel";
+import ControlPanel from "../components/ControlPanel";
 import { SocketContext } from "../components/SocketContext";
 import { AuthContext } from "../components/AuthProvider";
+import UserPanel from "../components/UserPanel";
 
 export default function Dashboard() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [showingDMs, setShowingDMs] = useState(false);
+  const [showingProfile, setShowingProfile] = useState(false);
+  const [selectedUsername, setSelectedUsername] = useState<string | null>(null);
   const [rooms, setRooms] = useState<Room[]>([]);
   const { socket } = useContext(SocketContext);
   const { user } = useContext(AuthContext);
@@ -49,24 +52,24 @@ export default function Dashboard() {
     };
   }, [socket, selectedRoom?.id, user?.id]);
 
-  const handleSelectRoom = (room: Room) => {
+  const handleSelectRoom = (room: Room, isDM = false) => {
+    setShowingProfile(false);
     setSelectedRoom(room);
-    setShowingDMs(false);
-    setRooms((prev) =>
-      prev.map((r) => (r.id === room.id ? { ...r, unreadCount: 0 } : r)),
-    );
-  };
-
-  const handleSelectDM = (room: Room) => {
-    setSelectedRoom(room);
+    if (!isDM) setShowingDMs(false);
     setRooms((prev) =>
       prev.map((r) => (r.id === room.id ? { ...r, unreadCount: 0 } : r)),
     );
   };
 
   const handleSelectDMs = () => {
+    setShowingProfile(false);
     setShowingDMs(true);
     setSelectedRoom(null);
+  };
+
+  const handleSelectAvatar = (username: string) => {
+    setSelectedUsername(username);
+    setShowingProfile(true);
   };
 
   return (
@@ -89,7 +92,7 @@ export default function Dashboard() {
           <DMList
             rooms={dmRooms}
             selectedRoomId={selectedRoom?.id ?? null}
-            onSelectRoom={handleSelectDM}
+            onSelectRoom={(room) => handleSelectRoom(room, true)}
           />
         ) : selectedRoom ? (
           <RoomPanel room={selectedRoom} />
@@ -102,12 +105,19 @@ export default function Dashboard() {
 
       {/* Column 3: 6/12 — Messages */}
       <div className="col-span-6 bg-woodsmoke overflow-hidden">
-        <MessagesPanel room={selectedRoom} />
+        {showingProfile && selectedUsername ? (
+          <UserPanel username={selectedUsername} />
+        ) : (
+          <MessagesPanel
+            room={selectedRoom}
+            onSelectAvatar={handleSelectAvatar}
+          />
+        )}
       </div>
 
       {/* Column 4: 2/12 — Members / info */}
       <div className="col-span-2 bg-charade">
-        <UserPanel />
+        <ControlPanel onSelectAvatar={handleSelectAvatar} />
       </div>
     </div>
   );

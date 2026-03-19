@@ -22,9 +22,10 @@ interface Message {
 
 interface MessagesPanelProps {
   room: Room | null;
+  onSelectAvatar?: (username: string) => void;
 }
 
-export default function MessagesPanel({ room }: MessagesPanelProps) {
+export default function MessagesPanel({ room, onSelectAvatar }: MessagesPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const [input, setInput] = useState("");
@@ -193,6 +194,8 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
             userId={otherMember?.id ?? undefined}
             src={otherMember?.profilePictureUrl ?? undefined}
             alt={`${otherMember?.username ?? "Room"}`}
+            showStatus={true}
+            onClick={() => {onSelectAvatar?.(otherMember?.username ?? "");}}
           />
         )}
         <div>
@@ -241,12 +244,14 @@ export default function MessagesPanel({ room }: MessagesPanelProps) {
               className={`flex items-end pb-2 gap-2 ${isOwn ? "flex-row-reverse" : "flex-row"}`}
             >
               {/* Avatar */}
-              <div className="shrink-0 mb-1">
+              <div className="shrink-0 mb-1 overflow-hidden">
                 <Avatar
                   src={message.sender.profilePictureUrl ?? undefined}
                   alt={message.sender.username}
                   size="md"
                   userId={message.sender.id}
+                  showStatus={true}
+                  onClick={() => {onSelectAvatar?.(otherMember?.username ?? "");}}
                 />
               </div>
 
