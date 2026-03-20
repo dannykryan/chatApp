@@ -9,4 +9,5 @@ export interface User {
   createdAt: string;
   updatedAt?: string;
   spotifyDisplayName?: string | null;
+  isSystem: boolean;
 }

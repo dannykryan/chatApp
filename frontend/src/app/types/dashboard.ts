@@ -1,13 +1,10 @@
+import type { User } from "./user";
+
 export interface RoomMember {
   userId: string;
   role: "admin" | "member" | null;
-  user: {
-    id: string;
-    username: string;
-    profilePictureUrl: string | null;
-    isOnline: boolean;
-  };
-}
+  user: User;
+};
 
 export interface Room {
   id: string;
@@ -18,6 +15,7 @@ export interface Room {
   isPublic: boolean;
   members: RoomMember[];
   unreadCount: number;
+  lastMessageAt: string | null;
 }
 
 export interface RoomSidebarProps {

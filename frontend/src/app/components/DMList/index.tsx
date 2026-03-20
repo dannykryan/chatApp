@@ -39,7 +39,13 @@ export default function DMList({
       </div>
 
       <div className="flex flex-col overflow-y-auto">
-        {rooms.map((room) => {
+        {[...rooms]
+          .sort((a, b) => {
+            const aTime = a.lastMessageAt ? new Date(a.lastMessageAt).getTime() : 0;
+            const bTime = b.lastMessageAt ? new Date(b.lastMessageAt).getTime() : 0;
+            return bTime - aTime; // most recent first
+          })
+          .map((room) => {
           const partner = getDmPartner(room);
           if (!partner) return null;
 

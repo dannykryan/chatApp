@@ -39,6 +39,7 @@ const Login: React.FC = () => {
           isOnline: data.isOnline,
           username: data.username,
           profilePictureUrl: data.profilePictureUrl,
+          isSystem: data.isSystem,
           createdAt: data.createdAt,
         });
         router.push("/dashboard");

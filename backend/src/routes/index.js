@@ -91,6 +91,46 @@ router.post("/auth/register", async (req, res) => {
       return res.status(500).json({ error: "User creation failed" });
     }
 
+    // Find the system account and set up welcome DM
+    const systemUser = await prisma.user.findFirst({ 
+      where: { username: "chatapp_team" } 
+    });
+
+    if (systemUser) {
+      // Make chatapp_team friends with the new user automatically
+      await prisma.friends.create({
+        data: {
+          userId1: systemUser.id,
+          userId2: user.id,
+          status: "FRIENDS",
+        },
+      });
+
+      // Create a DM room between chatapp_team and the new user
+      const welcomeDM = await prisma.room.create({
+        data: {
+          type: "DIRECT_MESSAGE",
+          isPublic: false,
+          createdById: systemUser.id,
+          members: {
+            create: [
+              { userId: systemUser.id },
+              { userId: user.id },
+            ],
+          },
+        },
+      });
+
+      // Send the welcome message
+      await prisma.message.create({
+        data: {
+          roomId: welcomeDM.id,
+          senderId: systemUser.id,
+          content: `Hey ${username}, welcome to ChatApp! 👋 We're the ChatApp Team. Feel free to look around — if you have any feedback or run into any issues, let us know. Enjoy! 🚀`,
+        },
+      });
+    }
+
     res
       .status(201)
       .json({ message: "User registered successfully", user: user.id });
@@ -504,12 +544,13 @@ router.get("/rooms", verifyToken, async (req, res) => {
                 username: true,
                 profilePictureUrl: true,
                 isOnline: true,
+                isSystem: true,
               },
             },
           },
         },
       },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
     });
 
     // Attach unread count to each room
@@ -551,6 +592,7 @@ router.get("/rooms/:roomId", verifyToken, async (req, res) => {
                 profilePictureUrl: true,
                 isOnline: true,
                 lastOnline: true,
+                isSystem: true,
               },
             },
           },
@@ -611,6 +653,7 @@ router.get("/rooms/:roomId/messages", verifyToken, async (req, res) => {
             id: true,
             username: true,
             profilePictureUrl: true,
+            isSystem: true,
           },
         },
         replyTo: {

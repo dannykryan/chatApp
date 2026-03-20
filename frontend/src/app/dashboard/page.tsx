@@ -24,7 +24,7 @@ export default function Dashboard() {
   const [rooms, setRooms] = useState<Room[]>([]);
   // activeRoom tracks the selected DM room (not stored in col2 history)
   const [activeRoom, setActiveRoom] = useState<Room | null>(null);
-  const [col2History, setCol2History] = useState<PanelView[]>([{ type: "empty" }]);
+  const [col2History, setCol2History] = useState<PanelView[]>([{ type: "dmList" }]);
   const [col3History, setCol3History] = useState<PanelView[]>([{ type: "empty" }]);
 
   const { socket } = useContext(SocketContext);
@@ -90,7 +90,11 @@ export default function Dashboard() {
         prev.map((room) => {
           if (room.id !== message.roomId) return room;
           if (selectedRoom?.id === room.id) return room; // room is open, don't increment
-          return { ...room, unreadCount: (room.unreadCount ?? 0) + 1 };
+          return { 
+            ...room, 
+            lastMessageAt: new Date().toISOString(),
+            unreadCount: (room.unreadCount ?? 0) + 1 
+          };
         }),
       );
       const messageReceivedSound = new Audio("/sounds/bubble_pop.mp3");
@@ -133,7 +137,9 @@ export default function Dashboard() {
           onSelectRoom={(room) => handleSelectRoom(room, true)}
         />}
         {col2View.type === "room" && <RoomPanel room={col2View.room} />}
-        {col2View.type === "empty" && <div>Select a room</div>}
+        {col2View.type === "empty" && <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500 text-sm">Select a room</p>
+        </div>}
       </div>
 
       {/* Column 3: 6/12 — Messages */}

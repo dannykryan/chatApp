@@ -4,20 +4,18 @@ import { AuthContext } from "../AuthProvider";
 import Avatar from "../Avatar";
 import RoomAvatar from "../RoomAvatar";
 import type { Room } from "../../types/dashboard";
+import type { User } from "../../types/user";
 import { FaPaperPlane } from "react-icons/fa";
 import { SocketContext } from "../SocketContext";
 
 interface Message {
   id: string;
+  roomId: string;
   content: string;
   sentAt: string;
   editedAt: string | null;
   senderId: string;
-  sender: {
-    id: string;
-    username: string;
-    profilePictureUrl: string | null;
-  };
+  sender: User;
 }
 
 interface MessagesPanelProps {
@@ -40,6 +38,7 @@ export default function MessagesPanel({ room, onSelectAvatar }: MessagesPanelPro
   const otherMember = isDM
     ? (room?.members.find((m) => m.userId !== user?.id)?.user ?? null)
     : null;
+  const isSystemDM = isDM && otherMember?.isSystem === true;
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -73,6 +72,7 @@ export default function MessagesPanel({ room, onSelectAvatar }: MessagesPanelPro
     if (!socket || !room) return;
 
     const handleNewMessage = (message: Message) => {
+      if (message.roomId !== room.id) return;
       setMessages((prev) => [...prev, message]);
     };
 
@@ -299,30 +299,32 @@ export default function MessagesPanel({ room, onSelectAvatar }: MessagesPanelPro
       </div>
 
       {/* Message input */}
-      <div className="shrink-0 px-4 py-3 border-t border-charade">
-        <div className="flex items-end gap-2 bg-charade rounded-xl px-3 py-2">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={handleInput}
-            onKeyDown={handleKeyDown}
-            placeholder={`Message ${room.name ?? "this room"}...`}
-            rows={1}
-            className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 resize-none outline-none max-h-32 leading-relaxed py-1"
-          />
-          <button
-            onClick={handleSend}
-            disabled={!input.trim() || sending}
-            className="text-white hover:text-purple disabled:text-gray-600 transition-colors shrink-0 pb-1"
-            title="Send message"
-          >
-            <FaPaperPlane size={24} />
-          </button>
+      {!isSystemDM && (
+        <div className="shrink-0 px-4 py-3 border-t border-charade">
+          <div className="flex items-end gap-2 bg-charade rounded-xl px-3 py-2">
+            <textarea
+              ref={inputRef}
+              value={input}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              placeholder={`Message ${room.name ?? "this room"}...`}
+              rows={1}
+              className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 resize-none outline-none max-h-32 leading-relaxed py-1"
+            />
+            <button
+              onClick={handleSend}
+              disabled={!input.trim() || sending}
+              className="text-white hover:text-purple disabled:text-gray-600 transition-colors shrink-0 pb-1"
+              title="Send message"
+            >
+              <FaPaperPlane size={24} />
+            </button>
+          </div>
+          <p className="text-gray-600 text-xs mt-1 pl-1">
+            Enter to send · Shift+Enter for new line
+          </p>
         </div>
-        <p className="text-gray-600 text-xs mt-1 pl-1">
-          Enter to send · Shift+Enter for new line
-        </p>
-      </div>
+      )}
     </div>
   );
 }

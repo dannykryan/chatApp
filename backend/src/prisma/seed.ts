@@ -11,10 +11,25 @@ const BASE_URL =
 
 const users = [
   {
+    username: "danny",
+    email: "dannykryan@gmail.com",
+    bio: "Creator of chatApp",
+    profilePictureUrl: `${BASE_URL}/UserAvatars/danny.png`,
+    isSystem: false,
+  },
+  {
+    username: "chatapp_team",
+    email: "chatapp-team@example.com",
+    bio: "Official ChatApp Team",
+    profilePictureUrl: `${BASE_URL}/UserAvatars/chatapp-team.png`,
+    isSystem: true,
+  },
+  {
     username: "cyclops",
     email: "cyclops@xmen.com",
     bio: "Leader of the X-Men",
     profilePictureUrl: `${BASE_URL}/UserAvatars/cyclops.webp`,
+    isSystem: false,
   },
   {
     username: "wolverine",
@@ -98,6 +113,8 @@ async function main() {
     console.log(`Created user: ${user.username}`);
   }
 
+  const dannyId = createdUsers["danny"];
+  const chatAppTeamId = createdUsers["chatapp_team"];
   const cyclopsId = createdUsers["cyclops"];
   const wolverineId = createdUsers["wolverine"];
   const stormId = createdUsers["storm"];
@@ -108,6 +125,48 @@ async function main() {
   const icemanId = createdUsers["iceman"];
   const nightcrawlerId = createdUsers["nightcrawler"];
   const magnetoId = createdUsers["magneto"];
+
+  // ─── SYSTEM USERS ─────────────────────────────────────────────────
+  
+  // Danny and ChatApp Team are friends with everyone
+  console.log("Creating system users' friendships...");
+  for (const [username, userId] of Object.entries(createdUsers)) {
+    if (username === "danny" || username === "chatapp_team") continue;
+    await prisma.friends.upsert({
+      where: { userId1_userId2: { userId1: dannyId, userId2: userId } },
+      update: {},
+      create: { userId1: dannyId, userId2: userId, status: "FRIENDS" },
+    });
+
+    await prisma.friends.upsert({
+      where: { userId1_userId2: { userId1: chatAppTeamId, userId2: userId } },
+      update: {},
+      create: { userId1: chatAppTeamId, userId2: userId, status: "FRIENDS" },
+    });
+
+    // Create a welcome DM from ChatApp Team to each user
+    const welcomeDM = await prisma.room.create({
+      data: {
+        type: RoomType.DIRECT_MESSAGE,
+        isPublic: false,
+        createdById: chatAppTeamId,
+        members: {
+          create: [
+            { userId: chatAppTeamId },
+            { userId },
+          ],
+        },
+      },
+    });
+
+    await prisma.message.create({
+      data: {
+        roomId: welcomeDM.id,
+        senderId: chatAppTeamId,
+        content: `Hey, welcome to ChatApp! 👋 This is the ChatApp Team. Feel free to look around — if you have any feedback or run into any issues, let us know. Enjoy!`,
+      },
+    });
+  }
 
   // ─── FRIENDSHIPS ─────────────────────────────────────────────────
 
