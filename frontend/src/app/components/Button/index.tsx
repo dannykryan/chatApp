@@ -1,4 +1,5 @@
 interface ButtonStyles {
+  gray: string;
   primary: string;
   primaryOutline: string;
   redOutline: string;
@@ -10,8 +11,10 @@ interface ButtonStyles {
 }
 
 const buttonStyles: ButtonStyles = {
+  gray: 
+    "bg-charade text-gray-400 hover:bg-gray-700 hover:text-white transition-colors duration-200",
   primary:
-    "bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200",
+    "bg-purple text-white hover:bg-purple-dark transition-colors duration-200",
   primaryOutline:
     "bg-transparent border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors duration-200",
   redOutline:
@@ -45,7 +48,7 @@ const Button = ({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`button ${buttonStyles[btnStyle || "primary"]} px-4 py-2 rounded hover:cursor-pointer ${disabled ? "opacity-50 pointer-events-none" : ""} ${className || ""}`}
+      className={`button ${buttonStyles[btnStyle || "gray"]} px-4 py-2 rounded hover:cursor-pointer ${disabled ? "opacity-50 pointer-events-none" : ""} ${className || ""}`}
     >
       {children || "Click Me"}
     </button>

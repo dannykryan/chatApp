@@ -251,7 +251,7 @@ export default function MessagesPanel({ room, onSelectAvatar }: MessagesPanelPro
                   size="md"
                   userId={message.sender.id}
                   showStatus={true}
-                  onClick={() => {onSelectAvatar?.(otherMember?.username ?? "");}}
+                  onClick={() => onSelectAvatar?.(message.sender.username)}
                 />
               </div>
 

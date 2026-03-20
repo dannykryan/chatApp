@@ -44,7 +44,7 @@ export const ConfirmProvider = ({
           onClick={() => handleClose(false)}
         >
           <div
-            className="bg-gray-900 border border-gray-700 rounded-xl shadow-xl w-full max-w-sm p-6 flex flex-col gap-4"
+            className="bg-woodsmoke border border-gray-700 rounded-xl shadow-xl w-full max-w-sm p-6 flex flex-col gap-4"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -66,13 +66,13 @@ export const ConfirmProvider = ({
             {/* Actions */}
             <div className="flex justify-end gap-3 mt-2">
               <Button
-                btnStyle="primaryOutline"
+                btnStyle="gray"
                 onClick={() => handleClose(false)}
               >
                 Cancel
               </Button>
               <Button
-                btnStyle={options.confirmStyle ?? "redOutline"}
+                btnStyle={options.confirmStyle ?? "primary"}
                 onClick={() => handleClose(true)}
               >
                 {options.confirmLabel ?? "Confirm"}

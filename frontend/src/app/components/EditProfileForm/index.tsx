@@ -172,10 +172,10 @@ export default function EditProfileForm({
       </div>
 
       <div className="flex gap-2 justify-end pt-2">
-        <Button btnStyle="redOutline" onClick={onCancel}>
+        <Button btnStyle="gray" onClick={onCancel}>
           Cancel
         </Button>
-        <Button btnStyle="greenOutline" disabled={saving || uploadingImage}>
+        <Button btnStyle="primary" disabled={saving || uploadingImage}>
           {saving ? "Saving..." : "Save"}
         </Button>
       </div>

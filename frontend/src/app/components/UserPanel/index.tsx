@@ -7,6 +7,7 @@ import OwnedProfileActions from "../../components/OwnedProfileActions";
 import { AuthContext } from "../../components/AuthProvider";
 import ProfileSkeleton from "../../components/ProfileSkeleton";
 import Avatar from "../../components/Avatar";
+import { FaCalendarAlt } from "react-icons/fa";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -44,12 +45,15 @@ export default function UserPanel({ username }: UserPanelProps) {
         showStatus
         userId={displayUser.id}
       />
-      <h1 className="text-2xl font-bold mb-2">{displayUser.username}</h1>
-      <p className="text-gray-600">{displayUser.bio}</p>
-      <p className="text-gray-600 mt-2">
-        User Since: {new Date(displayUser.createdAt).toLocaleDateString()}
-      </p>
-      <p className="text-gray-600 mt-2">
+      <h1 className="mt-4 text-2xl text-white font-bold mb-2">{displayUser.username}</h1>
+      <p className="text-white">{displayUser.bio}</p>
+      <div className="flex items-center gap-2 mt-3 text-gray-400">
+        <FaCalendarAlt />
+        <p>
+          Joined {new Date(displayUser.createdAt).toLocaleDateString([], { month: "long", year: "numeric" })}
+        </p>
+      </div>
+      <p className="text-gray-400 mt-2">
         Last online:{" "}
         {displayUser.lastOnline
           ? new Date(displayUser.lastOnline).toLocaleString()

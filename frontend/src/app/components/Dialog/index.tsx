@@ -40,7 +40,7 @@ export default function Dialog({
         role="dialog"
         aria-modal="true"
         aria-label={title || "Dialog"}
-        className="bg-gray-900 border border-gray-700 rounded-xl shadow-xl w-full max-w-md flex flex-col gap-4 p-6"
+        className="bg-woodsmoke border border-gray-700 rounded-xl shadow-xl w-full max-w-md flex flex-col gap-4 p-6"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

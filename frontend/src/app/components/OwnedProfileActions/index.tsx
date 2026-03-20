@@ -4,14 +4,15 @@ import Button from "../Button";
 import { AuthContext } from "../AuthProvider";
 import EditProfileDialog from "../EditProfileDialog";
 import { User } from "../../types/user";
+import { FaPencilAlt } from "react-icons/fa";
 
-interface OwnedProfileActionsProps {
+interface EditButtonProps {
   className?: string;
 }
 
-export default function OwnedProfileActions({
+export default function EditButton({
   className = "",
-}: OwnedProfileActionsProps) {
+}: EditButtonProps) {
   const [open, setOpen] = useState(false);
   const { user, setUser } = useContext(AuthContext);
 
@@ -24,7 +25,7 @@ export default function OwnedProfileActions({
 
   return (
     <div className={`flex items-center justify-center gap-2 ${className}`}>
-      <Button btnStyle="greenOutline" onClick={() => setOpen(true)}>
+      <Button onClick={() => setOpen(true)}>
         Edit Profile
       </Button>
 

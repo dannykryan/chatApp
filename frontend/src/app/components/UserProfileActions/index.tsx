@@ -2,6 +2,7 @@
 import { useEffect, useState, useContext, useCallback } from "react";
 import { useConfirm } from "../../hooks/useConfirm/index";
 import Button from "../Button";
+import ButtonRound from "../ButtonRound";
 import {
   handleAddFriend,
   handleRemoveFriend,
@@ -84,7 +85,6 @@ const UserProfileActions = ({
       title: "Send Friend Request",
       message: `Are you sure you want to send a friend request to ${friendUsername}?`,
       confirmLabel: "Send",
-      confirmStyle: "greenOutline",
     }).then((result) => {
       if (result) {
         optimisticUpdate({ status: "PENDING", isSender: true }, () =>
@@ -98,7 +98,6 @@ const UserProfileActions = ({
       title: "Remove Friend",
       message: `Are you sure you want to remove ${friendUsername} from your friends?`,
       confirmLabel: "Remove",
-      confirmStyle: "redOutline",
     }).then((result) => {
       if (result) {
         optimisticUpdate({ status: "NONE", isSender: null }, () =>
@@ -112,7 +111,6 @@ const UserProfileActions = ({
       title: accept ? "Accept Friend Request" : "Decline Friend Request",
       message: `Are you sure you want to ${accept ? "accept" : "decline"} the friend request from ${friendUsername}?`,
       confirmLabel: accept ? "Accept" : "Decline",
-      confirmStyle: accept ? "greenOutline" : "redOutline",
     }).then((result) => {
       if (result) {
         if (!friendId || !authUser) return;
@@ -134,47 +132,50 @@ const UserProfileActions = ({
   return (
     <>
       {friendCheck.status === "FRIENDS" && (
-        <Button btnStyle="primaryOutline" onClick={onRemoveFriend}>
+        <ButtonRound onClick={onRemoveFriend}>
           <span className="flex items-center gap-3">
-            <FaUserXmark /> Remove Friend
+            <FaUserXmark size={20} />
           </span>
-        </Button>
+        </ButtonRound>
       )}
 
       {friendCheck.status === "NONE" && (
-        <Button btnStyle="greenOutline" onClick={onSendFriendRequest}>
+        <ButtonRound onClick={onSendFriendRequest}>
           <span className="flex items-center gap-3">
-            <FaUserPlus /> Send Friend Request
+            <FaUserPlus size={20} />
           </span>
-        </Button>
+        </ButtonRound>
       )}
       {friendCheck.status === "PENDING" && friendCheck.isSender === true && (
-        <Button btnStyle="greenOutline" disabled>
+        <ButtonRound disabled>
           <span className="flex items-center gap-3">
-            <FaUserPlus /> Friend Request Sent
+            <FaUserPlus size={20  } />
           </span>
-        </Button>
+        </ButtonRound>
       )}
       {friendCheck.status === "PENDING" &&
         friendCheck.isSender === false &&
         friendId && (
-          <div className="gap-2 flex">
-            <Button
-              onClick={() => onRespondToRequest(true)}
-              btnStyle="greenOutline"
-            >
-              <span className="flex items-center gap-3">
-                <FaCheck /> Accept Friend Request
-              </span>
-            </Button>
-            <Button
-              onClick={() => onRespondToRequest(false)}
-              btnStyle="redOutline"
-            >
-              <span className="flex items-center gap-3">
-                <FaTimes /> Decline Friend Request
-              </span>
-            </Button>
+          <div>
+            <p className="text-sm text-gray-400 mb-2">{friendUsername} wants to be your friend</p>
+            <div className="gap-2 flex">
+              <Button
+                onClick={() => onRespondToRequest(false)}
+                btnStyle="gray"
+              >
+                <span className="flex items-center gap-3">
+                  <FaTimes /> Decline
+                </span>
+              </Button>
+              <Button
+                onClick={() => onRespondToRequest(true)}
+                btnStyle="primary"
+              >
+                <span className="flex items-center gap-3">
+                  <FaCheck /> Accept
+                </span>
+              </Button>
+            </div>
           </div>
         )}
     </>
