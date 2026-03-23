@@ -1,12 +1,11 @@
 "use client";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useContext } from "react";
+import { API_URL } from "../../../../shared/utils/api";
 import { AuthContext } from "../../../../shared/context/AuthProvider";
 import { FaEnvelope } from "react-icons/fa";
 import RoomAvatar from "../RoomAvatar";
-import { Room, RoomSidebarProps } from "../../../../types/dashboard";
+import { RoomSidebarProps } from "../../../../types/dashboard";
 import ButtonRound from "../../../../shared/components/ButtonRound";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function RoomSidebar({
   selectedRoomId,

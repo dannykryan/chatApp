@@ -1,8 +1,7 @@
 import { useState, useContext } from "react";
+import { API_URL } from "../../shared/utils/api";
 import { ConfirmContext } from "../../shared/context/ConfirmProvider";
 import { useRouter } from "next/navigation";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const validateEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

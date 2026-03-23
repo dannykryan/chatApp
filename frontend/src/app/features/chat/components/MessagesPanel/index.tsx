@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useContext } from "react";
+import { API_URL } from "../../../../shared/utils/api";
 import { AuthContext } from "../../../../shared/context/AuthProvider";
 import Avatar from "../../../../features/user/components/Avatar";
 import RoomAvatar from "../../../../features/rooms/components/RoomAvatar";
@@ -42,8 +43,6 @@ export default function MessagesPanel({
     ? (room?.members.find((m) => m.userId !== user?.id)?.user ?? null)
     : null;
   const isSystemDM = isDM && otherMember?.isSystem === true;
-
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     if (!room || !token) return;

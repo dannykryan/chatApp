@@ -8,7 +8,7 @@ import {
   handleRemoveFriend,
   handleFriendResponse,
   checkFriendStatus,
-} from "../../../../utils/friendship";
+} from "../../../../shared/utils/friendship";
 import { AuthContext } from "../../../../shared/context/AuthProvider";
 import { SocketContext } from "../../../../shared/context/SocketProvider";
 import { FaUserPlus, FaCheck, FaTimes } from "react-icons/fa";

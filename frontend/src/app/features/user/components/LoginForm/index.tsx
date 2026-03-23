@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useContext } from "react";
+import { API_URL } from "../../../../shared/utils/api";
 import { AuthContext } from "../../../../shared/context/AuthProvider";
 import { useRouter } from "next/navigation";
 import Button from "../../../../shared/components/Button";
@@ -11,8 +12,6 @@ const Login: React.FC = () => {
   const { setUser, setToken } = useContext(AuthContext);
   const { token } = useContext(AuthContext);
   const router = useRouter();
-
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     if (token) {

@@ -1,8 +1,7 @@
 "use client";
-import React, { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
+import { API_URL } from "../../utils/api";
 import { User } from "../../../types/user";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const AuthContext = createContext({
   user: null as User | null,

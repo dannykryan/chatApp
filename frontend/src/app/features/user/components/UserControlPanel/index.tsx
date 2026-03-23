@@ -4,7 +4,7 @@ import { AuthContext } from "../../../../shared/context/AuthProvider";
 import { useRouter } from "next/navigation";
 import Avatar from "../Avatar";
 import { TbLogout } from "react-icons/tb";
-import { logoutUser } from "../../../../utils/auth";
+import { logoutUser } from "../../../../shared/utils/auth";
 import { useConfirm } from "../../../../hooks/useConfirm/index";
 
 interface ControlPanelProps {

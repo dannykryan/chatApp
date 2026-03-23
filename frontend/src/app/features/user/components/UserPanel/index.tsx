@@ -1,6 +1,6 @@
 "use client";
-import { use, useContext } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { API_URL } from "../../../../shared/utils/api";
 import { User } from "../../../../types/user";
 import UserProfileActions from "../UserProfileActions";
 import OwnedProfileActions from "../OwnedProfileActions";
@@ -8,8 +8,6 @@ import { AuthContext } from "../../../../shared/context/AuthProvider";
 import ProfileSkeleton from "../ProfileSkeleton";
 import Avatar from "../Avatar";
 import { FaCalendarAlt } from "react-icons/fa";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface UserPanelProps {
   username: string;

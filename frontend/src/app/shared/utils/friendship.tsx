@@ -1,4 +1,4 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { API_URL } from "./api";
 
 interface FriendStatusResponse {
   status: "FRIENDS" | "PENDING" | "NONE";

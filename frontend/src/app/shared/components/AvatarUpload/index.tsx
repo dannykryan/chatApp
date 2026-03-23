@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from "react";
+import { API_URL } from "../../../shared/utils/api";
 import Image from "next/image";
 import { FaCamera } from "react-icons/fa";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface AvatarUploadProps {
   value: string;
