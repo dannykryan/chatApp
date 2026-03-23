@@ -130,9 +130,8 @@ npm run test
 
 ## 📈 Future Roadmap
 
-- [ ] Update friend request logic to work with new UI
 - [ ] Load more / pagination for message history
-- [ ] Media sharing via Supabase Storage
+- [ ] Media sharing
 - [ ] Message reactions and replies
 - [ ] Room creation and management UI
 - [ ] Friend request notifications
