@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import AuthProvider from "./components/AuthProvider";
-import SocketProvider from "./components/SocketContext";
-import ConfirmProvider from "./components/ConfirmProvider";
-import { PresenceProvider } from "./components/PresenceProvider";
+import AuthProvider from "./shared/context/AuthProvider";
+import SocketProvider from "./shared/context/SocketProvider";
+import ConfirmProvider from "./shared/context/ConfirmProvider";
+import { PresenceProvider } from "./shared/context/PresenceProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,9 +34,7 @@ export default function RootLayout({
         <AuthProvider>
           <SocketProvider>
             <PresenceProvider>
-              <ConfirmProvider>
-                {children}
-              </ConfirmProvider>
+              <ConfirmProvider>{children}</ConfirmProvider>
             </PresenceProvider>
           </SocketProvider>
         </AuthProvider>

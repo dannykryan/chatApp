@@ -1,15 +1,15 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
-import RoomSidebar from "../components/RoomSidebar";
-import DMList from "../components/DMList";
-import RoomPanel from "../components/RoomPanel";
+import RoomSidebar from "../features/rooms/components/RoomSidebar";
+import DMList from "../features/chat/components/DMList";
+import RoomPanel from "../features/rooms/components/RoomPanel";
 import { Room } from "../types/dashboard";
-import MessagesPanel from "../components/MessagesPanel";
-import ControlPanel from "../components/ControlPanel";
-import { SocketContext } from "../components/SocketContext";
-import { AuthContext } from "../components/AuthProvider";
-import UserPanel from "../components/UserPanel";
-import ButtonRound from "../components/ButtonRound";
+import MessagesPanel from "../features/chat/components/MessagesPanel";
+import ControlPanel from "../features/user/components/UserControlPanel";
+import { SocketContext } from "../shared/context/SocketProvider";
+import { AuthContext } from "../shared/context/AuthProvider";
+import UserPanel from "../features/user/components/UserPanel";
+import ButtonRound from "../shared/components/ButtonRound";
 import { FaArrowLeft } from "react-icons/fa";
 
 // Each column tracks a history stack of views.
@@ -24,8 +24,12 @@ export default function Dashboard() {
   const [rooms, setRooms] = useState<Room[]>([]);
   // activeRoom tracks the selected DM room (not stored in col2 history)
   const [activeRoom, setActiveRoom] = useState<Room | null>(null);
-  const [col2History, setCol2History] = useState<PanelView[]>([{ type: "dmList" }]);
-  const [col3History, setCol3History] = useState<PanelView[]>([{ type: "empty" }]);
+  const [col2History, setCol2History] = useState<PanelView[]>([
+    { type: "dmList" },
+  ]);
+  const [col3History, setCol3History] = useState<PanelView[]>([
+    { type: "empty" },
+  ]);
 
   const { socket } = useContext(SocketContext);
   const { user } = useContext(AuthContext);
@@ -34,16 +38,20 @@ export default function Dashboard() {
   const col2View = col2History[col2History.length - 1];
   const col3View = col3History[col3History.length - 1];
 
-  const pushCol2 = (view: PanelView) => setCol2History((prev) => [...prev, view]);
-  const pushCol3 = (view: PanelView) => setCol3History((prev) => [...prev, view]);
+  const pushCol2 = (view: PanelView) =>
+    setCol2History((prev) => [...prev, view]);
+  const pushCol3 = (view: PanelView) =>
+    setCol3History((prev) => [...prev, view]);
 
   // Reset clears history — the new view becomes the home (no back button)
   const resetCol2 = (view: PanelView) => setCol2History([view]);
   const resetCol3 = (view: PanelView) => setCol3History([view]);
 
   // Back button only shows when history length > 1
-  const popCol2 = () => setCol2History((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
-  const popCol3 = () => setCol3History((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
+  const popCol2 = () =>
+    setCol2History((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
+  const popCol3 = () =>
+    setCol3History((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
 
   // The currently open room — either a group room from col2 or a DM from activeRoom
   const selectedRoom = col2View.type === "room" ? col2View.room : activeRoom;
@@ -60,7 +68,9 @@ export default function Dashboard() {
       resetCol3({ type: "empty" });
     }
     // Clear unread count for the room we just opened
-    setRooms((prev) => prev.map((r) => (r.id === room.id ? { ...r, unreadCount: 0 } : r)));
+    setRooms((prev) =>
+      prev.map((r) => (r.id === room.id ? { ...r, unreadCount: 0 } : r)),
+    );
   };
 
   // Opening a profile pushes to col3 so the user can go back to messages
@@ -90,10 +100,10 @@ export default function Dashboard() {
         prev.map((room) => {
           if (room.id !== message.roomId) return room;
           if (selectedRoom?.id === room.id) return room; // room is open, don't increment
-          return { 
-            ...room, 
+          return {
+            ...room,
             lastMessageAt: new Date().toISOString(),
-            unreadCount: (room.unreadCount ?? 0) + 1 
+            unreadCount: (room.unreadCount ?? 0) + 1,
           };
         }),
       );
@@ -131,15 +141,19 @@ export default function Dashboard() {
             </ButtonRound>
           </div>
         )}
-        {col2View.type === "dmList" && <DMList
-          rooms={dmRooms}
-          selectedRoomId={selectedRoom?.id ?? null}
-          onSelectRoom={(room) => handleSelectRoom(room, true)}
-        />}
+        {col2View.type === "dmList" && (
+          <DMList
+            rooms={dmRooms}
+            selectedRoomId={selectedRoom?.id ?? null}
+            onSelectRoom={(room) => handleSelectRoom(room, true)}
+          />
+        )}
         {col2View.type === "room" && <RoomPanel room={col2View.room} />}
-        {col2View.type === "empty" && <div className="flex items-center justify-center h-full">
+        {col2View.type === "empty" && (
+          <div className="flex items-center justify-center h-full">
             <p className="text-gray-500 text-sm">Select a room</p>
-        </div>}
+          </div>
+        )}
       </div>
 
       {/* Column 3: 6/12 — Messages */}
@@ -151,8 +165,15 @@ export default function Dashboard() {
             </ButtonRound>
           </div>
         )}
-        {col3View.type === "profile" && <UserPanel username={col3View.username} />}
-        {col3View.type === "empty" && <MessagesPanel room={selectedRoom} onSelectAvatar={handleSelectAvatar} />}
+        {col3View.type === "profile" && (
+          <UserPanel username={col3View.username} />
+        )}
+        {col3View.type === "empty" && (
+          <MessagesPanel
+            room={selectedRoom}
+            onSelectAvatar={handleSelectAvatar}
+          />
+        )}
       </div>
 
       {/* Column 4: 2/12 — Members / info */}

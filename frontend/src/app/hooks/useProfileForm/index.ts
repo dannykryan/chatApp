@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { ConfirmContext } from "../../components/ConfirmProvider";
+import { ConfirmContext } from "../../shared/context/ConfirmProvider";
 import { useRouter } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -16,7 +16,19 @@ export function useProfileForm(mode: "register" | "edit") {
 
   const handleSubmit = async (
     e: React.SubmitEvent,
-    { email, username, password, profilePictureUrl, bio }: { email: string; username: string; password?: string; profilePictureUrl: string; bio?: string }
+    {
+      email,
+      username,
+      password,
+      profilePictureUrl,
+      bio,
+    }: {
+      email: string;
+      username: string;
+      password?: string;
+      profilePictureUrl: string;
+      bio?: string;
+    },
   ) => {
     e.preventDefault();
     setEmailError("");
@@ -41,10 +53,12 @@ export function useProfileForm(mode: "register" | "edit") {
       body.bio = bio;
     }
 
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const token =
+        typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
       const headers: Record<string, string> = {
         "Content-Type": "application/json",
@@ -67,7 +81,10 @@ export function useProfileForm(mode: "register" | "edit") {
         } else if (data.error === "Email already taken") {
           setEmailError("Email is already registered");
         } else {
-          setError(data.error || (mode === "register" ? "Registration failed" : "Update failed"));
+          setError(
+            data.error ||
+              (mode === "register" ? "Registration failed" : "Update failed"),
+          );
         }
         return false;
       }
