@@ -5,7 +5,7 @@ import { AuthContext } from "../../../../shared/context/AuthProvider";
 import { useRouter } from "next/navigation";
 import Button from "../../../../shared/components/Button";
 
-const Login: React.FC = () => {
+const LoginForm: React.FC = () => {
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -91,4 +91,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default LoginForm;

@@ -76,6 +76,12 @@ const Register: React.FC = () => {
       <Button type="submit" btnStyle="primary" className="w-full">
         Register
       </Button>
+      <a
+        href="/login"
+        className="block mt-4 text-center text-purple hover:underline"
+      >
+        Already have an account? Login here.
+      </a>
     </form>
   );
 };

@@ -1,9 +1,9 @@
-import Login from "../features/user/components/LoginForm";
+import LoginForm from "../features/user/components/LoginForm";
 
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-charade">
-      <Login />
+      <LoginForm />
     </div>
   );
 }
