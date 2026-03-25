@@ -11,9 +11,10 @@ import { FaCalendarAlt } from "react-icons/fa";
 
 interface UserPanelProps {
   username: string;
+  openDirectMessage: (friendId: string, friendUsername: string) => void;
 }
 
-export default function UserPanel({ username }: UserPanelProps) {
+export default function UserPanel({ username, openDirectMessage }: UserPanelProps) {
   const { user: authUser } = useContext(AuthContext);
   const [user, setUser] = useState<User | null>(null);
 
@@ -70,6 +71,7 @@ export default function UserPanel({ username }: UserPanelProps) {
           <UserProfileActions
             friendUsername={displayUser.username}
             friendId={displayUser.id}
+            openDirectMessage={openDirectMessage}
           />
         )}
       </div>

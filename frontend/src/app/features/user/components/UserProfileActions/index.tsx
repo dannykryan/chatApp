@@ -12,16 +12,18 @@ import {
 import { AuthContext } from "../../../../shared/context/AuthProvider";
 import { SocketContext } from "../../../../shared/context/SocketProvider";
 import { FaUserPlus, FaCheck, FaTimes } from "react-icons/fa";
-import { FaUserXmark } from "react-icons/fa6";
+import { FaUserCheck, FaEnvelope } from "react-icons/fa6";
 
 interface UserProfileActionsProps {
   friendUsername: string;
   friendId?: string;
+  openDirectMessage: (friendId: string, friendUsername: string) => void;
 }
 
 const UserProfileActions = ({
   friendUsername,
   friendId,
+  openDirectMessage,
 }: UserProfileActionsProps) => {
   const [friendCheck, setFriendCheck] = useState<{
     status: string;
@@ -122,37 +124,43 @@ const UserProfileActions = ({
     });
   };
 
+  const onMessageUser = () => {
+    if (friendId) {
+      openDirectMessage(friendId, friendUsername);
+    }
+  };
+
   console.log("Friend check status:", friendCheck);
 
   if (!friendCheck) return null;
 
-  // TODO: Add error handling for better UX, currently it just won't show any buttons until the check is done. Also consider using a library like react-query for better data fetching management.
-  // TODO: Add confirmation modals for actions like removing a friend or accepting/declining requests to prevent accidental clicks.
+  // TODO: Add error handling for better UX, currently it just won't show any buttons until the check is done. Consider using a library like react-query for better data fetching management.
   // TODO: Reduce code duplication by creating a reusable FriendRequestCard component for the pending request UI, since it has similar structure for both sent and received requests.
   return (
     <>
       {friendCheck.status === "FRIENDS" && (
-        <ButtonRound onClick={onRemoveFriend}>
+        <ButtonRound onClick={onRemoveFriend} title="Remove friend">
           <span className="flex items-center gap-3">
-            <FaUserXmark size={20} />
+            <FaUserCheck size={20} />
           </span>
         </ButtonRound>
       )}
 
       {friendCheck.status === "NONE" && (
-        <ButtonRound onClick={onSendFriendRequest}>
+        <ButtonRound onClick={onSendFriendRequest} title="Send friend request">
           <span className="flex items-center gap-3">
-            <FaUserPlus size={20} />
+            <FaUserPlus size={20}/>
           </span>
         </ButtonRound>
       )}
       {friendCheck.status === "PENDING" && friendCheck.isSender === true && (
-        <ButtonRound disabled>
+        <ButtonRound disabled title="Friend request sent">
           <span className="flex items-center gap-3">
-            <FaUserPlus size={20} />
+            <FaUserPlus size={20}/>
           </span>
         </ButtonRound>
       )}
+      {/* Show accept/decline buttons if the current user is the recipient of the friend request */}
       {friendCheck.status === "PENDING" &&
         friendCheck.isSender === false &&
         friendId && (
@@ -177,6 +185,11 @@ const UserProfileActions = ({
             </div>
           </div>
         )}
+        <ButtonRound onClick={onMessageUser} title="Send message">
+          <span className="flex items-center gap-3">
+            <FaEnvelope size={20} />
+          </span>
+        </ButtonRound>
     </>
   );
 };

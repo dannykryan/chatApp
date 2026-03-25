@@ -78,7 +78,9 @@ router.post("/auth/register", async (req, res) => {
     }
 
     // Check if username exists
-    const existingUsername = await prisma.user.findUnique({ where: { username } });
+    const existingUsername = await prisma.user.findUnique({
+      where: { username },
+    });
     if (existingUsername) {
       return res.status(409).json({ error: "Username already taken" });
     }
@@ -110,8 +112,8 @@ router.post("/auth/register", async (req, res) => {
     }
 
     // Find the system account and set up welcome DM
-    const systemUser = await prisma.user.findFirst({ 
-      where: { username: "chatapp_team" } 
+    const systemUser = await prisma.user.findFirst({
+      where: { username: "chatapp_team" },
     });
 
     if (systemUser) {
@@ -131,10 +133,7 @@ router.post("/auth/register", async (req, res) => {
           isPublic: false,
           createdById: systemUser.id,
           members: {
-            create: [
-              { userId: systemUser.id },
-              { userId: user.id },
-            ],
+            create: [{ userId: systemUser.id }, { userId: user.id }],
           },
         },
       });
@@ -631,6 +630,138 @@ router.get("/rooms/:roomId", verifyToken, async (req, res) => {
     }
 
     res.json(room);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/rooms", verifyToken, async (req, res) => {
+  try {
+    const { name, type, memberIds, memberUsername } = req.body;
+
+    if (!type) {
+      return res.status(400).json({ error: "Type is required" });
+    }
+
+    if (type === "DIRECT_MESSAGE") {
+      if (!memberUsername) {
+        return res
+          .status(400)
+          .json({ error: "memberUsername is required for DMs" });
+      }
+      // Find the target user
+      const targetUser = await prisma.user.findUnique({
+        where: { username: memberUsername },
+      });
+      if (!targetUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      // Check for existing DM room (must have exactly these two members)
+      const existingRoom = await prisma.room.findFirst({
+        where: {
+          type: "DIRECT_MESSAGE",
+          members: {
+            every: {
+              userId: { in: [req.user.userId, targetUser.id] },
+            },
+          },
+        },
+        include: {
+          members: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  profilePictureUrl: true,
+                  isOnline: true,
+                  isSystem: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      if (existingRoom) {
+        return res
+          .status(409)
+          .json({ error: "DM room already exists", room: existingRoom });
+      }
+      // Create the DM room
+      const room = await prisma.room.create({
+        data: {
+          type: "DIRECT_MESSAGE",
+          members: {
+            create: [{ userId: req.user.userId }, { userId: targetUser.id }],
+          },
+        },
+      });
+      // Fetch the full room with members and user info
+      const fullRoom = await prisma.room.findUnique({
+        where: { id: room.id },
+        include: {
+          members: {
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  username: true,
+                  profilePictureUrl: true,
+                  isOnline: true,
+                  isSystem: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      return res.status(201).json(fullRoom);
+    }
+
+    // For group/public rooms
+    if (
+      !name ||
+      !memberIds ||
+      !Array.isArray(memberIds) ||
+      memberIds.length === 0
+    ) {
+      return res
+        .status(400)
+        .json({
+          error: "Name and memberIds are required for group/public rooms",
+        });
+    }
+
+    // Create the group/public room
+    const room = await prisma.room.create({
+      data: {
+        name,
+        type,
+        members: {
+          create: memberIds.map((userId) => ({ userId })),
+        },
+      },
+    });
+    // Fetch the full room with members and user info
+    const fullRoom = await prisma.room.findUnique({
+      where: { id: room.id },
+      include: {
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                username: true,
+                profilePictureUrl: true,
+                isOnline: true,
+                isSystem: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return res.status(201).json(fullRoom);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

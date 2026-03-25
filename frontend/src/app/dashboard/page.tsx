@@ -1,5 +1,6 @@
 "use client";
 import { useState, useContext, useEffect } from "react";
+import { API_URL } from "../shared/utils/api";
 import RoomSidebar from "../features/rooms/components/RoomSidebar";
 import DMList from "../features/chat/components/DMList";
 import RoomPanel from "../features/rooms/components/RoomPanel";
@@ -22,6 +23,7 @@ type PanelView =
 
 export default function Dashboard() {
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [pendingDM, setPendingDM] = useState<{ userId: string, username: string } | null>(null);
   // activeRoom tracks the selected DM room (not stored in col2 history)
   const [activeRoom, setActiveRoom] = useState<Room | null>(null);
   const [col2History, setCol2History] = useState<PanelView[]>([
@@ -80,7 +82,25 @@ export default function Dashboard() {
 
   // Switching to DMs resets col2 — DM list becomes the new home
   const handleSelectDMs = () => {
-    resetCol2({ type: "dmList" }); // DM list = new home for col2
+    resetCol2({ type: "dmList" });
+  };
+
+  const openDirectMessage = (friendId: string, friendUsername: string) => {
+    // Check if a DM room with this user already exists
+    const existingDM = rooms.find(
+      (r) =>
+        r.type === "DIRECT_MESSAGE" &&
+        r.members.some((m) => m.userId === friendId),
+    );
+    if (existingDM) {
+      handleSelectRoom(existingDM, true);
+      return;
+    }
+    // If no existing DM, open message composer and create room on send
+    resetCol2({ type: "dmList" });
+    setActiveRoom(null); // no room yet
+    setPendingDM({ userId: friendId, username: friendUsername });
+        resetCol3({ type: "empty" }); // Show MessagesPanel for pendingDM
   };
 
   const dmRooms = rooms.filter((r) => r.type === "DIRECT_MESSAGE");
@@ -166,12 +186,15 @@ export default function Dashboard() {
           </div>
         )}
         {col3View.type === "profile" && (
-          <UserPanel username={col3View.username} />
+          <UserPanel username={col3View.username} openDirectMessage={openDirectMessage} />
         )}
         {col3View.type === "empty" && (
           <MessagesPanel
             room={selectedRoom}
             onSelectAvatar={handleSelectAvatar}
+            pendingDM={pendingDM}
+            setPendingDM={setPendingDM}
+            setActiveRoom={setActiveRoom}
           />
         )}
       </div>

@@ -22,11 +22,17 @@ interface Message {
 interface MessagesPanelProps {
   room: Room | null;
   onSelectAvatar?: (username: string) => void;
+  pendingDM?: { userId: string; username: string } | null;
+  setPendingDM?: (dm: { userId: string; username: string } | null) => void;
+  setActiveRoom?: (room: Room | null) => void;
 }
 
 export default function MessagesPanel({
   room,
   onSelectAvatar,
+  pendingDM,
+  setPendingDM,
+  setActiveRoom,
 }: MessagesPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
@@ -125,6 +131,73 @@ export default function MessagesPanel({
     e.target.style.height = `${e.target.scrollHeight}px`;
   };
 
+
+  // Show pending DM UI if no room but pendingDM is set
+  if (!room && pendingDM) {
+    // Show message input for pendingDM.username
+    return (
+      <div className="flex flex-col h-full justify-center items-center">
+        <div className="mb-4 text-gray-400">
+          Start a conversation with <span className="font-bold">{pendingDM.username}</span>
+        </div>
+        <div className="w-full max-w-lg">
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={handleInput}
+            onKeyDown={handleKeyDown}
+            placeholder={`Message ${pendingDM.username}...`}
+            rows={1}
+            className="w-full bg-charade text-white rounded p-2"
+          />
+          <button
+            onClick={async () => {
+              if (!input.trim() || sending) return;
+              setSending(true);
+              try {
+                // 1. Create the DM room
+                const res = await fetch(`${API_URL}/rooms`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    type: "DIRECT_MESSAGE",
+                    memberUsername: pendingDM.username,
+                  }),
+                });
+                const data = await res.json();
+                if (data && data.id) {
+                  // 2. Send the first message
+                  await fetch(`${API_URL}/rooms/${data.id}/messages`, {
+                    method: "POST",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ content: input.trim() }),
+                  });
+                  setInput("");
+                  if (data) {
+                    setActiveRoom?.(data);
+                    setPendingDM?.(null);
+                  }
+                }
+              } finally {
+                setSending(false);
+              }
+            }}
+            disabled={!input.trim() || sending}
+            className="mt-2 bg-purple text-white px-4 py-2 rounded"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!room) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -177,6 +250,71 @@ export default function MessagesPanel({
       lastDate = dateKey;
     }
     messagesWithDividers.push({ type: "message", message });
+  }
+
+  if (!room && pendingDM) {
+    // Show message input for pendingDM.username
+    return (
+      <div className="flex flex-col h-full justify-center items-center">
+        <div className="mb-4 text-gray-400">
+          Start a conversation with <span className="font-bold">{pendingDM.username}</span>
+        </div>
+        <div className="w-full max-w-lg">
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={handleInput}
+            onKeyDown={handleKeyDown}
+            placeholder={`Message ${pendingDM.username}...`}
+            rows={1}
+            className="w-full bg-charade text-white rounded p-2"
+          />
+          <button
+            onClick={async () => {
+              if (!input.trim() || sending) return;
+              setSending(true);
+              try {
+                // 1. Create the DM room
+                const res = await fetch(`${API_URL}/rooms`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    type: "DIRECT_MESSAGE",
+                    memberUsername: pendingDM.username,
+                  }),
+                });
+                const data = await res.json();
+                if (data && data.id) {
+                  // 2. Send the first message
+                  await fetch(`${API_URL}/rooms/${data.id}/messages`, {
+                    method: "POST",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ content: input.trim() }),
+                  });
+                  setInput("");
+                  if (data) {
+                    setActiveRoom?.(data);
+                    setPendingDM?.(null);
+                  }
+                }
+              } finally {
+                setSending(false);
+              }
+            }}
+            disabled={!input.trim() || sending}
+            className="mt-2 bg-purple text-white px-4 py-2 rounded"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
