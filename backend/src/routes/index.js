@@ -715,6 +715,12 @@ router.post("/rooms", verifyToken, async (req, res) => {
           },
         },
       });
+
+      // Emit 'dm:new' to both users (after room creation, only for DMs)
+      const io = req.app.get("io");
+      io.to(`user:${req.user.userId}`).emit("dm:new", fullRoom);
+      io.to(`user:${targetUser.id}`).emit("dm:new", fullRoom);
+
       return res.status(201).json(fullRoom);
     }
 
@@ -761,6 +767,7 @@ router.post("/rooms", verifyToken, async (req, res) => {
         },
       },
     });
+
     return res.status(201).json(fullRoom);
   } catch (error) {
     res.status(500).json({ error: error.message });

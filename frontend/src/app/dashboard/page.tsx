@@ -105,7 +105,7 @@ export default function Dashboard() {
 
   const dmRooms = rooms.filter((r) => r.type === "DIRECT_MESSAGE");
 
-  // Listen for new messages and update unread counts
+  // Listen for new messages and new DM rooms
   useEffect(() => {
     if (!socket) return;
 
@@ -131,10 +131,21 @@ export default function Dashboard() {
       messageReceivedSound.play();
     };
 
+    const handleNewDMRoom = (newRoom: Room) => {
+      console.log("New DM room created:", newRoom);
+      setRooms((prev) => {
+        // Only add room if not already present
+        if (prev.some((room) => room.id === newRoom.id)) return prev;
+        return [newRoom, ...prev]; // Add to top
+      });
+    };
+
     socket.on("message:new", handleNewMessage);
+    socket.on("dm:new", handleNewDMRoom);
 
     return () => {
       socket.off("message:new", handleNewMessage);
+      socket.off("dm:new", handleNewDMRoom);
     };
   }, [socket, selectedRoom?.id, user?.id]);
 
