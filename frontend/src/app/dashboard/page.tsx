@@ -2,7 +2,7 @@
 import { useState, useContext, useEffect } from "react";
 import { API_URL } from "../shared/utils/api";
 import RoomSidebar from "../features/rooms/components/RoomSidebar";
-import DMList from "../features/chat/components/DMList";
+import RoomList from "../features/chat/components/RoomList";
 import RoomPanel from "../features/rooms/components/RoomPanel";
 import { Room } from "../types/dashboard";
 import MessagesPanel from "../features/chat/components/MessagesPanel";
@@ -100,6 +100,7 @@ export default function Dashboard() {
   };
 
   const dmRooms = rooms.filter((r) => r.type === "DIRECT_MESSAGE");
+  const chatRooms = rooms.filter((r) => r.type !== "DIRECT_MESSAGE");
 
   // Listen for new messages and new DM rooms
   useEffect(() => {
@@ -170,16 +171,20 @@ export default function Dashboard() {
           </div>
         )}
         {col2View.type === "dmList" && (
-          <DMList
+          <RoomList
             rooms={dmRooms}
+            mode="dm"
             selectedRoomId={selectedRoom?.id ?? null}
             onSelectRoom={(room) => handleSelectRoom(room, true)}
           />
         )}
         {col2View.type === "chatRoom" && (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500 text-sm">Select a chat room</p>
-          </div>
+          <RoomList
+            rooms={chatRooms}
+            mode="chatRoom"
+            selectedRoomId={selectedRoom?.id ?? null}
+            onSelectRoom={(room) => handleSelectRoom(room, true)}
+          />
         )}
         {col2View.type === "room" && <RoomPanel room={col2View.room} />}
         {col2View.type === "empty" && (
