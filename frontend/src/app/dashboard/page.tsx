@@ -17,13 +17,17 @@ import { FaArrowLeft } from "react-icons/fa";
 // reset() sets a new "home", push() drills deeper, pop() goes back.
 type PanelView =
   | { type: "empty" }
+  | { type: "chatRoom" }
   | { type: "room"; room: Room }
   | { type: "dmList" }
   | { type: "profile"; username: string };
 
 export default function Dashboard() {
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [pendingDM, setPendingDM] = useState<{ userId: string, username: string } | null>(null);
+  const [pendingDM, setPendingDM] = useState<{
+    userId: string;
+    username: string;
+  } | null>(null);
   // activeRoom tracks the selected DM room (not stored in col2 history)
   const [activeRoom, setActiveRoom] = useState<Room | null>(null);
   const [col2History, setCol2History] = useState<PanelView[]>([
@@ -40,16 +44,13 @@ export default function Dashboard() {
   const col2View = col2History[col2History.length - 1];
   const col3View = col3History[col3History.length - 1];
 
+  // Navigation helpers
   const pushCol2 = (view: PanelView) =>
     setCol2History((prev) => [...prev, view]);
   const pushCol3 = (view: PanelView) =>
     setCol3History((prev) => [...prev, view]);
-
-  // Reset clears history — the new view becomes the home (no back button)
   const resetCol2 = (view: PanelView) => setCol2History([view]);
   const resetCol3 = (view: PanelView) => setCol3History([view]);
-
-  // Back button only shows when history length > 1
   const popCol2 = () =>
     setCol2History((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
   const popCol3 = () =>
@@ -60,16 +61,13 @@ export default function Dashboard() {
 
   const handleSelectRoom = (room: Room, isDM = false) => {
     if (isDM) {
-      // DMs don't go into col2 history — just set activeRoom and reset messages
       setActiveRoom(room);
       resetCol3({ type: "empty" });
     } else {
-      // Group rooms reset both col2 and col3 — fresh navigation home
       setActiveRoom(null);
       resetCol2({ type: "room", room });
       resetCol3({ type: "empty" });
     }
-    // Clear unread count for the room we just opened
     setRooms((prev) =>
       prev.map((r) => (r.id === room.id ? { ...r, unreadCount: 0 } : r)),
     );
@@ -80,13 +78,12 @@ export default function Dashboard() {
     pushCol3({ type: "profile", username });
   };
 
-  // Switching to DMs resets col2 — DM list becomes the new home
-  const handleSelectDMs = () => {
-    resetCol2({ type: "dmList" });
+  // Switching to DMs or chat rooms resets col2
+  const handleSelectDMs = (roomType: "dmList" | "chatRoom" = "dmList") => {
+    resetCol2({ type: roomType });
   };
 
   const openDirectMessage = (friendId: string, friendUsername: string) => {
-    // Check if a DM room with this user already exists
     const existingDM = rooms.find(
       (r) =>
         r.type === "DIRECT_MESSAGE" &&
@@ -96,11 +93,10 @@ export default function Dashboard() {
       handleSelectRoom(existingDM, true);
       return;
     }
-    // If no existing DM, open message composer and create room on send
     resetCol2({ type: "dmList" });
-    setActiveRoom(null); // no room yet
+    setActiveRoom(null);
     setPendingDM({ userId: friendId, username: friendUsername });
-        resetCol3({ type: "empty" }); // Show MessagesPanel for pendingDM
+    resetCol3({ type: "empty" });
   };
 
   const dmRooms = rooms.filter((r) => r.type === "DIRECT_MESSAGE");
@@ -160,6 +156,7 @@ export default function Dashboard() {
           onRoomsLoaded={setRooms}
           rooms={rooms}
           showingDMs={col2View.type === "dmList"}
+          showingChatRooms={col2View.type === "chatRoom"}
         />
       </div>
 
@@ -167,7 +164,7 @@ export default function Dashboard() {
       <div className="col-span-3 bg-charade border-r border-woodsmoke flex flex-col">
         {col2History.length > 1 && (
           <div className="absolute top-2 left-2 z-10">
-            <ButtonRound onClick={popCol3} title="Back">
+            <ButtonRound onClick={popCol2} title="Back">
               <FaArrowLeft size={20} />
             </ButtonRound>
           </div>
@@ -178,6 +175,11 @@ export default function Dashboard() {
             selectedRoomId={selectedRoom?.id ?? null}
             onSelectRoom={(room) => handleSelectRoom(room, true)}
           />
+        )}
+        {col2View.type === "chatRoom" && (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500 text-sm">Select a chat room</p>
+          </div>
         )}
         {col2View.type === "room" && <RoomPanel room={col2View.room} />}
         {col2View.type === "empty" && (
@@ -197,7 +199,10 @@ export default function Dashboard() {
           </div>
         )}
         {col3View.type === "profile" && (
-          <UserPanel username={col3View.username} openDirectMessage={openDirectMessage} />
+          <UserPanel
+            username={col3View.username}
+            openDirectMessage={openDirectMessage}
+          />
         )}
         {col3View.type === "empty" && (
           <MessagesPanel

@@ -2,7 +2,7 @@
 import { useEffect, useContext } from "react";
 import { API_URL } from "../../../../shared/utils/api";
 import { AuthContext } from "../../../../shared/context/AuthProvider";
-import { FaEnvelope } from "react-icons/fa";
+import { FaEnvelope, FaComments } from "react-icons/fa";
 import RoomAvatar from "../RoomAvatar";
 import { RoomSidebarProps } from "../../../../types/dashboard";
 import ButtonRound from "../../../../shared/components/ButtonRound";
@@ -13,6 +13,7 @@ export default function RoomSidebar({
   onSelectDMs,
   onRoomsLoaded,
   showingDMs,
+  showingChatRooms,
   rooms,
 }: RoomSidebarProps) {
   const { token, user } = useContext(AuthContext);
@@ -39,12 +40,21 @@ export default function RoomSidebar({
     <div className="flex flex-col items-center gap-3 py-4 px-2 h-full bg-woodsmoke overflow-y-auto">
       {/* DM Button */}
       <ButtonRound
-        onClick={onSelectDMs}
+        onClick={() => onSelectDMs("dmList")}
         isSelected={showingDMs}
         title="Direct Messages"
         unread={DMUnreadCount}
       >
         <FaEnvelope size={24} />
+      </ButtonRound>
+      {/* Rooms Button */}
+      <ButtonRound
+        onClick={() => onSelectDMs("chatRoom")}
+        isSelected={showingChatRooms}
+        title="Chat Rooms"
+        unread={DMUnreadCount}
+      >
+        <FaComments size={24} />
       </ButtonRound>
 
       {/* Divider */}
