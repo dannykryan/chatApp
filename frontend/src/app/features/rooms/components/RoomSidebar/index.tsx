@@ -36,6 +36,8 @@ export default function RoomSidebar({
     .filter((r) => r.type === "DIRECT_MESSAGE")
     .reduce((sum, r) => sum + (r.unreadCount ?? 0), 0);
 
+  const chatRoomUnreadCount = groupRooms.reduce((sum, r) => sum + (r.unreadCount ?? 0), 0);
+
   return (
     <div className="flex flex-col items-center gap-3 py-4 px-2 h-full bg-woodsmoke overflow-y-auto">
       {/* DM Button */}
@@ -52,7 +54,7 @@ export default function RoomSidebar({
         onClick={() => onSelectDMs("chatRoom")}
         isSelected={showingChatRooms}
         title="Chat Rooms"
-        unread={DMUnreadCount}
+        unread={chatRoomUnreadCount}
       >
         <FaComments size={24} />
       </ButtonRound>
