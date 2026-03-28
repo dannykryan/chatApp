@@ -1,5 +1,5 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../../../../shared/context/AuthProvider";
 import Avatar from "../../../user/components/Avatar";
 import { Room } from "../../../../types/dashboard";
@@ -18,7 +18,13 @@ export default function RoomList({
   onSelectRoom,
   mode,
 }: RoomListProps) {
+
   const { user } = useContext(AuthContext);
+
+  // Dropdown filter state: 'all', 'public', 'private'
+  const [roomType, setRoomType] = useState<'all' | 'public' | 'private'>('all');
+  // Search input state
+  const [search, setSearch] = useState('');
 
   // For DMs, get the other user
   const getDmPartner = (room: Room) => {
@@ -38,16 +44,65 @@ export default function RoomList({
     );
   }
 
+  // Filtering logic
+  let filteredRooms = [...rooms];
+  if (mode === "chatRoom") {
+    if (roomType === "public") {
+      filteredRooms = filteredRooms.filter((room) => room.isPublic);
+    } else if (roomType === "private") {
+      filteredRooms = filteredRooms.filter((room) => !room.isPublic);
+    }
+  }
+  if (search.trim() !== "") {
+    filteredRooms = filteredRooms.filter((room) => {
+      if (mode === "dm") {
+        const partner = getDmPartner(room);
+        return partner?.username.toLowerCase().includes(search.toLowerCase());
+      } else {
+        return room.name?.toLowerCase().includes(search.toLowerCase());
+      }
+    });
+  }
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-woodsmoke">
         <h2 className="text-white font-semibold text-sm">
           {mode === "dm" ? "Direct Messages" : "Chat Rooms"}
         </h2>
+        {/* Dropdown and search input stacked with labels */}
+        <div className="flex flex-col gap-2 mt-3">
+          {mode === "chatRoom" && (
+            <div className="flex flex-col">
+              <label className="text-xs text-gray-400 mb-1" htmlFor="room-filter">Filter</label>
+              <select
+                id="room-filter"
+                className="bg-woodsmoke text-white text-xs rounded px-2 py-1 border border-gray-700 focus:outline-none"
+                value={roomType}
+                onChange={(e) => setRoomType(e.target.value as 'all' | 'public' | 'private')}
+              >
+                <option value="all">All</option>
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+              </select>
+            </div>
+          )}
+          <div className="flex flex-col">
+            <label className="text-xs text-gray-400 mb-1" htmlFor="room-search">Search</label>
+            <input
+              id="room-search"
+              className="bg-woodsmoke text-white text-xs rounded px-2 py-1 border border-gray-700 focus:outline-none"
+              type="text"
+              placeholder={mode === "dm" ? "Search by username..." : "Search rooms..."}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col overflow-y-auto">
-        {[...rooms]
+        {filteredRooms
           .sort((a, b) => {
             const aTime = a.lastMessageAt
               ? new Date(a.lastMessageAt).getTime()
