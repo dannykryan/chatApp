@@ -153,7 +153,7 @@ export default function Dashboard() {
         <RoomSidebar
           selectedRoomId={selectedRoom?.id ?? null}
           onSelectRoom={handleSelectRoom}
-          onSelectDMs={handleSelectDMs}
+          onSelectView={handleSelectDMs}
           onRoomsLoaded={setRooms}
           rooms={rooms}
           showingDMs={col2View.type === "dmList"}

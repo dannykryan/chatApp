@@ -10,7 +10,7 @@ import ButtonRound from "../../../../shared/components/ButtonRound";
 export default function RoomSidebar({
   selectedRoomId,
   onSelectRoom,
-  onSelectDMs,
+  onSelectView,
   onRoomsLoaded,
   showingDMs,
   showingChatRooms,
@@ -42,7 +42,7 @@ export default function RoomSidebar({
     <div className="flex flex-col items-center gap-3 py-4 px-2 h-full bg-woodsmoke overflow-y-auto">
       {/* DM Button */}
       <ButtonRound
-        onClick={() => onSelectDMs("dmList")}
+        onClick={() => onSelectView("dmList")}
         isSelected={showingDMs}
         title="Direct Messages"
         unread={DMUnreadCount}
@@ -51,7 +51,7 @@ export default function RoomSidebar({
       </ButtonRound>
       {/* Rooms Button */}
       <ButtonRound
-        onClick={() => onSelectDMs("chatRoom")}
+        onClick={() => onSelectView("chatRoom")}
         isSelected={showingChatRooms}
         title="Chat Rooms"
         unread={chatRoomUnreadCount}

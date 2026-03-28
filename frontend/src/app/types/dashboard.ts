@@ -21,7 +21,7 @@ export interface Room {
 export interface RoomSidebarProps {
   selectedRoomId: string | null;
   onSelectRoom: (room: Room) => void;
-  onSelectDMs: (type: "dmList" | "chatRoom") => void;
+  onSelectView: (type: "dmList" | "chatRoom") => void;
   onRoomsLoaded: (rooms: Room[]) => void;
   showingDMs: boolean;
   showingChatRooms: boolean;
