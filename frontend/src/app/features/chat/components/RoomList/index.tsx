@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../../../shared/context/AuthProvider";
 import Avatar from "../../../user/components/Avatar";
 import { Room } from "../../../../types/dashboard";
+import { FaGlobe, FaLock } from "react-icons/fa";
 
 interface RoomListProps {
   rooms: Room[];
@@ -106,7 +107,7 @@ export default function RoomList({
                   key={room.id}
                   onClick={() => onSelectRoom(room)}
                   className={`
-                  flex items-center gap-3 px-4 py-3 text-left transition-colors w-full
+                  flex items-center gap-3 px-4 py-3 text-left transition-colors w-full cursor-pointer
                   ${
                     isSelected
                       ? "bg-woodsmoke text-white"
@@ -131,10 +132,37 @@ export default function RoomList({
                     )}
                   </div>
 
-                  {/* Room name */}
-                  <span className="text-sm font-medium truncate flex-1">
-                    {room.name}
-                  </span>
+                  <div className="flex flex-col flex-1 min-w-0">
+                    {/* Room name */}
+                    <span className="text-sm font-medium truncate flex-1">
+                      {room.name}
+                    </span>
+
+                    {/* Room meta */}
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      {room.isPublic ? (
+                        <span className="flex items-center gap-1">
+                          <FaGlobe size={10} /> Public
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1">
+                          <FaLock size={10} /> Private
+                        </span>
+                      )}
+                      <span>·</span>
+                      <span>
+                        {room.members.length} member{room.members.length !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Unread badge */}
+                  {room.unreadCount > 0 && (
+                    <span className="flex items-center justify-center mr-auto rounded-full bg-purple min-w-4.5 h-4.5 px-1 text-white text-[12px] font-bold shrink-0">
+                      {room.unreadCount > 99 ? "99+" : room.unreadCount}
+                    </span>
+                  )}
+
                 </button>
               );
             }
